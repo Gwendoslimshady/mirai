@@ -3,14 +3,15 @@
 export function initTrailReveal(canvas, gradient) {
     const ctx = canvas.getContext('2d'); // Get the 2D rendering context
     let trails = []; // Store trail positions
+    const MAX_TRAIL_TIME = 800; // Trail points remain for 2 seconds before they are removed
 
-    // Function to add trail positions
+    // Function to add trail positions with timestamps
     function addTrail(x, y) {
-        trails.push({ x, y, opacity: 1 }); // Full opacity initially
-        if (trails.length > 100) trails.shift(); // Limit trail length for performance
+        const timestamp = Date.now(); // Get the current time
+        trails.push({ x, y, timestamp }); // Add mouse position with a timestamp
     }
 
-    // Function to update canvas and draw the trails
+    // Function to update canvas and draw the smooth, closing-in trail
     function drawTrails() {
         // Start by filling the canvas with a white overlay
         ctx.fillStyle = 'white';
@@ -19,26 +20,48 @@ export function initTrailReveal(canvas, gradient) {
         // Set the composite operation to erase the trail path, revealing the gradient
         ctx.globalCompositeOperation = 'destination-out'; // Erase parts of the canvas
 
-        trails = trails.map((trail, index) => {
-            ctx.beginPath();
-            if (index > 0) {
-                const prevTrail = trails[index - 1];
-                // Draw a line between previous and current trail point
-                ctx.moveTo(prevTrail.x, prevTrail.y);
-                ctx.lineTo(trail.x, trail.y);
+        const currentTime = Date.now(); // Get the current time
+
+        // Filter out points that have existed longer than MAX_TRAIL_TIME
+        trails = trails.filter(trail => currentTime - trail.timestamp < MAX_TRAIL_TIME);
+
+        // Draw the trail line
+        ctx.beginPath();
+        trails.forEach((trail, index) => {
+            const progress = index / trails.length; // Calculate the progress along the trail
+            const lineWidth = 80; // Shrink the trail size from head to tail
+
+            if (index === 0) {
+                ctx.moveTo(trail.x, trail.y); // Start from the first trail point
+                ctx.shadowBlur = 30; // Add blur to the head circle
+                ctx.shadowColor = 'rgba(255, 255, 255, 1)'; // White blur around the head
+            } else {
+                ctx.lineTo(trail.x, trail.y); // Draw a line to the next trail point
+                ctx.shadowBlur = 30; // Add blur to the head circle
+                ctx.shadowColor = 'rgba(255, 255, 255, 1)'; // White blur around the head
             }
 
-            // Add blur and increase size of the reveal circle
-            ctx.shadowBlur = 30; // Adds a blur to the reveal circle
-            ctx.shadowColor = 'rgba(255, 255, 255, 1)'; // White blur around the circle
+            // Set the stroke style and line width for the trail
+            ctx.strokeStyle = 'rgba(0, 0, 0, 1)'; // Solid black trail
+            ctx.lineWidth = Math.max(lineWidth, 5); // Ensure the line doesn’t get too thin
+        });
+        ctx.stroke(); // Finalize the trail drawing
 
-            ctx.strokeStyle = `rgba(0, 0, 0, ${trail.opacity})`; // Black trail to erase
-            ctx.lineWidth = 60; // Make the circle bigger (adjust this for size)
-            ctx.lineCap = "round"; // Rounded edges
-            ctx.stroke();
+        // Draw the head as a blurred circle at the most recent point
+        if (trails.length > 0) {
+            const head = trails[trails.length - 1]; // The most recent point
 
-            return { ...trail, opacity: Math.max(trail.opacity - 0.05, 0) }; // Fade out over time
-        }).filter(trail => trail.opacity > 0); // Remove fully faded trails
+            ctx.shadowBlur = 30; // Add blur to the head circle
+            ctx.shadowColor = 'rgba(255, 255, 255, 1)'; // White blur around the head
+
+            ctx.beginPath();
+            ctx.arc(head.x, head.y, 40, 0, Math.PI * 2); // Larger circle for the head
+            ctx.fillStyle = 'rgba(0, 0, 0, 1)'; // Solid black for the head
+            ctx.fill();
+
+            // Reset the shadowBlur for the rest of the drawing
+            ctx.shadowBlur = 0;
+        }
 
         // Reset composite operation to normal after erasing
         ctx.globalCompositeOperation = 'source-over';
