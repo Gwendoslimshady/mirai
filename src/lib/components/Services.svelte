@@ -13,7 +13,8 @@
 
 <style>
   section {
-    padding: 20px;
+    height: 100vh;
+    width: 100vw;
     text-align: center;
   }
   h2 {
