@@ -1,0 +1,16 @@
+src/
+    app.d.ts
+    app.html
+    lib/
+        index.js
+        components/
+            About.svelte
+            Footer.svelte
+            Header.svelte
+            Nav.svelte
+            Services.svelte
+        helpers/
+            mouseHelpers.js
+        utils/
+    routes/
+        +page.svelte
