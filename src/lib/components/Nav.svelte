@@ -1,20 +1,22 @@
 <script>
+	import { fade } from 'svelte/transition'; // Import Svelte's fade transition
 	export let width;
-  
+	
 	let isMenuOpen = false; // State to track whether the menu is open or not
-  
+	
 	function toggleMenu() {
 	  isMenuOpen = !isMenuOpen;
 	}
-  
+	
 	function closeMenu() {
 	  isMenuOpen = false;
 	}
   
+	// Smooth scroll to section and close the menu
 	function scrollToSection(id) {
 	  const currentPath = window.location.pathname;
 	  const targetSection = `#${id}`;
-  
+	
 	  if (currentPath === '/') {
 		const section = document.querySelector(targetSection);
 		section.scrollIntoView({ behavior: 'smooth' });
@@ -59,6 +61,11 @@
 	  <li><a class="nav-link" on:click={() => scrollToSection('footer')}>footer</a></li>
 	</ul>
   </nav>
+  
+  <!-- Apply the fade transition on content change -->
+  <div transition:fade>
+	<slot />
+  </div>
   
   <style>
 	/* Mobile burger menu and close button styling */

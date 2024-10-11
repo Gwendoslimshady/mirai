@@ -53,7 +53,6 @@
     align-items: center;
     min-height: 100vh;
     padding: 20px;
-    background-color: #ffffff; /* Light off-white background similar to pricing page */
   }
 
   .content {

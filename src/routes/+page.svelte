@@ -36,7 +36,7 @@
 </script>
 
 <RevealOverlay gradient={gradient} />
-<main>
+<main style="background-image: {gradient};">
   <Nav width={navWidth} />
   <div class="sections">
     <section id="header"><Header /></section>

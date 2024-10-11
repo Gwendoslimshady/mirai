@@ -37,7 +37,7 @@
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: 100%;
     pointer-events: none; /* Ensure it doesn't block user interactions */
   }
 
@@ -46,7 +46,7 @@
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: 100%;
     background-color: white; /* Ensure white background */
     pointer-events: none; /* Allow interactions below the overlay */
   }

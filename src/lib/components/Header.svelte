@@ -1,12 +1,8 @@
 <script>
-  import RevealOverlay from '$lib/components/RevealOverlay.svelte';
   import { generateRandomGradient } from '$lib/helpers/mouseHelpers.js';
-
-  let gradient = generateRandomGradient(); // Generate a random gradient background
 </script>
 
-<section class="header-section" style="background-image: {gradient};">
-  <RevealOverlay gradient={gradient} />
+<section class="header-section">
   <div class="content">
     <h1>mirai</h1>
     <!-- Neumorphic Button -->

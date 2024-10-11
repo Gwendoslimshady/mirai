@@ -52,7 +52,7 @@
     min-height: 100vh;
     padding: 20px;
     text-align: left;
-    background-color: #ffffff; /* Slight off-white background */
+
   }
 
   /* Content container */
