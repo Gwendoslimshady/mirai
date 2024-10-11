@@ -23,22 +23,38 @@
 </main>
 
 <style>
+  /* Main layout: row with nav and sections */
   main {
     display: flex;
     flex-direction: row;
-    align-items: center;
-    padding: 0;
+    min-height: 100vh; /* Ensure full height for vertical centering */
   }
+
+  /* Navbar */
+  .nav-container {
+    width: var(--nav-width);
+    background-color: #f0f0f0; /* Adjust as needed */
+    position: fixed;
+    height: 100vh; /* Full height navigation */
+  }
+
+  /* Sections container takes remaining width */
   .sections {
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: calc(100% - var(--nav-width)); /* Remaining width next to the nav */
+    padding: 20px;
   }
+
+  /* Section setup to center content both horizontally and vertically */
   section {
     display: flex;
     justify-content: center;
     align-items: center;
+    min-height: 100vh; /* Ensure full height for vertical centering */
+    width: 100%;
   }
-  .section-content {
-    margin-left: var(--nav-width);
-    width: calc(100% - var(--nav-width));
-  }
+
 </style>
