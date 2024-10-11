@@ -3,7 +3,7 @@
 export function initTrailReveal(canvas, gradient) {
     const ctx = canvas.getContext('2d'); // Get the 2D rendering context
     let trails = []; // Store trail positions
-    const MAX_TRAIL_TIME = 800; // Trail points remain for 2 seconds before they are removed
+    const MAX_TRAIL_TIME = 2000; // Trail points remain for 2 seconds before they are removed
 
     // Function to add trail positions with timestamps
     function addTrail(x, y) {
@@ -25,29 +25,27 @@ export function initTrailReveal(canvas, gradient) {
         // Filter out points that have existed longer than MAX_TRAIL_TIME
         trails = trails.filter(trail => currentTime - trail.timestamp < MAX_TRAIL_TIME);
 
-        // Draw the trail line
-        ctx.beginPath();
-        trails.forEach((trail, index) => {
-            const progress = index / trails.length; // Calculate the progress along the trail
-            const lineWidth = 80; // Shrink the trail size from head to tail
+        // Set smooth line joins and caps
+        ctx.lineJoin = 'round';  // Makes sure line joins are smooth
+        ctx.lineCap = 'round';   // Makes the ends of the lines round
 
-            if (index === 0) {
-                ctx.moveTo(trail.x, trail.y); // Start from the first trail point
-                ctx.shadowBlur = 30; // Add blur to the head circle
-                ctx.shadowColor = 'rgba(255, 255, 255, 1)'; // White blur around the head
-            } else {
-                ctx.lineTo(trail.x, trail.y); // Draw a line to the next trail point
-                ctx.shadowBlur = 30; // Add blur to the head circle
-                ctx.shadowColor = 'rgba(255, 255, 255, 1)'; // White blur around the head
-            }
+        // Draw each segment of the trail with the correct width (thicker at the head, thinner at the tail)
+        for (let i = 0; i < trails.length - 1; i++) {
+            const progress = i / (trails.length - 1 || 1); // Calculate progress from tail to head
+            const lineWidth = 40 * (1 + progress); // Thicker at the head, thinner at the tail
 
-            // Set the stroke style and line width for the trail
+            // Draw each segment between two trail points
+            ctx.beginPath();
+            ctx.moveTo(trails[i].x, trails[i].y);
+            ctx.lineTo(trails[i + 1].x, trails[i + 1].y);
+
+            // Set the stroke style and line width for the current segment
             ctx.strokeStyle = 'rgba(0, 0, 0, 1)'; // Solid black trail
-            ctx.lineWidth = Math.max(lineWidth, 5); // Ensure the line doesn’t get too thin
-        });
-        ctx.stroke(); // Finalize the trail drawing
+            ctx.lineWidth = Math.max(lineWidth, 5); // Ensure the line width decreases toward the tail
+            ctx.stroke(); // Finalize the stroke for this segment
+        }
 
-        // Draw the head as a blurred circle at the most recent point
+        // Draw the head as a blurred circle at the most recent point (thickest)
         if (trails.length > 0) {
             const head = trails[trails.length - 1]; // The most recent point
 
