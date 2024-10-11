@@ -1,4 +1,5 @@
 <script>
+  
 	import HowItWorks from '../lib/components/HowItWorks.svelte';
   import Header from '$lib/components/Header.svelte';
   import About from '$lib/components/About.svelte';

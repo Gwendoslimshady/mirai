@@ -52,21 +52,24 @@
 	  display: flex;
 	  flex-direction: column; /* Vertical list */
 	  gap: 15px;
+	  text-align: right;
 	}
   
 	/* Styling individual links */
 	.nav-link {
-	  font-size: 1.5rem; /* Larger text */
-	  font-weight: 400; /* Regular weight initially */
+	  font-size: 1.25rem; /* Larger text */
+	  font-weight: 500; /* Regular weight initially */
+	  letter-spacing: .35rem;
 	  color: #333; /* Default color */
 	  cursor: pointer;
 	  text-decoration: none;
 	  transition: font-weight 0.3s ease, color 0.3s ease;
+	  line-height: 2.5rem;
+	  
 	}
   
 	/* On hover, make the text bold and change color */
 	.nav-link:hover {
-	  font-weight: 700; /* Bold on hover */
 	  color: #000; /* Darker color on hover */
 	}
   </style>

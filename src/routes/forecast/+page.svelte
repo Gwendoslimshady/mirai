@@ -1,8 +1,11 @@
 <script>
-    // Any script logic or reactive variables can go here
+          import Nav from '$lib/components/Nav.svelte';
+          import Footer from '$lib/components/Footer.svelte';
+          let navWidth = '20%'; // adjustable nav width
   </script>
   
   <main>
+    <Nav width={navWidth} />
     <section class="forecast-section">
       <h2>Start Your Forecast</h2>
       <form class="forecast-form">
@@ -67,6 +70,7 @@
         </div>
       </form>
     </section>
+    
   </main>
   
   <style>
