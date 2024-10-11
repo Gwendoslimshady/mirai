@@ -50,4 +50,6 @@
     background-color: white; /* Ensure white background */
     pointer-events: none; /* Allow interactions below the overlay */
   }
+
+  
 </style>

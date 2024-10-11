@@ -45,7 +45,7 @@
 </section>
 
 <style>
-  /* Section layout */
+  /* General layout for the contact section */
   .contact-section {
     display: flex;
     flex-direction: column;
@@ -53,60 +53,82 @@
     align-items: center;
     min-height: 100vh;
     padding: 20px;
-    background-color: white;
+    background-color: #ffffff; /* Light off-white background similar to pricing page */
   }
 
   .content {
     max-width: 800px;
     width: 100%;
+    text-align: center;
   }
 
   /* Header styling */
   h1 {
     font-size: 36px;
     font-weight: 700;
-    color: #000;
-    text-align: center;
+    color: #333;
     margin-bottom: 30px;
     text-transform: uppercase;
   }
 
-  /* Contact form layout */
+  /* Contact form styling */
   .contact-form {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    border: 1px solid #333;
-    padding: 20px;
+    background-color: #ffffff; /* White background for neumorphic effect */
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 
+      8px 8px 16px rgba(0, 0, 0, 0.1),
+      -8px -8px 16px rgba(255, 255, 255, 0.7);
     max-width: 600px;
     margin: 0 auto;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
 
-  /* Form groups */
+  .contact-form:hover {
+    transform: translateY(-5px); /* Slight lift on hover */
+    box-shadow: 
+      10px 10px 20px rgba(0, 0, 0, 0.15),
+      -10px -10px 20px rgba(255, 255, 255, 0.8);
+  }
+
+  /* Form groups for grouping input fields */
   .form-group {
     display: flex;
-    justify-content: space-between;
     gap: 20px;
   }
 
   .input-field {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    flex: 1;
   }
 
   label {
     font-size: 14px;
     color: #333;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
   }
 
   input, textarea {
-    padding: 10px;
+    padding: 12px;
     font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 100%;
+    border: none;
+    background-color: #ffffff; /* Neumorphic background */
+    border-radius: 12px;
+    box-shadow: 
+      inset 4px 4px 8px rgba(0, 0, 0, 0.1),
+      inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+    transition: box-shadow 0.3s ease;
+  }
+
+  input:focus, textarea:focus {
+    outline: none;
+    box-shadow: 
+      inset 6px 6px 12px rgba(0, 0, 0, 0.2),
+      inset -6px -6px 12px rgba(255, 255, 255, 0.8);
   }
 
   .textarea-group {
@@ -114,27 +136,28 @@
     flex-direction: column;
   }
 
+  /* Submit button styling */
   button {
-    background-color: black;
+    background-color: #007BFF;
     color: white;
     border: none;
-    padding: 10px;
-    font-size: 18px;
+    padding: 12px;
+    font-size: 16px;
     cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    width: 100%;
+    border-radius: 50px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
   }
 
   button:hover {
-    background-color: #333;
+    background-color: #0056b3;
+    transform: translateY(-3px);
   }
 
   /* Footer section */
   .footer {
     display: flex;
     justify-content: space-between;
-    margin-top: 20px;
+    margin-top: 30px;
     width: 100%;
     max-width: 600px;
   }
@@ -153,6 +176,10 @@
   @media (max-width: 768px) {
     .form-group {
       flex-direction: column;
+    }
+
+    .contact-form {
+      padding: 20px;
     }
 
     .content {
