@@ -7,10 +7,14 @@
   import Contact from '$lib/components/Contact.svelte';
   import Footer from '$lib/components/Footer.svelte';
   import Nav from '$lib/components/Nav.svelte';
+  import RevealOverlay from '$lib/components/RevealOverlay.svelte';
+  import { generateRandomGradient } from '$lib/helpers/mouseHelpers.js';
 
+  let gradient = generateRandomGradient(); // Generate a random gradient background
   let navWidth = '20%'; // adjustable nav width
 </script>
 
+<RevealOverlay gradient={gradient} />
 <main>
   <Nav width={navWidth} />
   <div class="sections">
@@ -28,7 +32,6 @@
   main {
     display: flex;
     flex-direction: row;
-    min-height: 100vh; /* Ensure full height for vertical centering */
   }
 
   /* Navbar */
@@ -46,7 +49,7 @@
     justify-content: center;
     align-items: center;
     width: calc(100% - var(--nav-width)); /* Remaining width next to the nav */
-    padding: 20px;
+
   }
 
   /* Section setup to center content both horizontally and vertically */
