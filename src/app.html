@@ -12,6 +12,21 @@
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">
-		<div style="display: contents">%sveltekit.body%</div>
-	</body>
+		<div id="app">
+		  %sveltekit.body%
+		</div>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/fontfaceobserver/2.1.0/fontfaceobserver.standalone.js"></script>
+		<script>
+const fontWorkSans = new FontFaceObserver('Work Sans', { weight: 400 });
+const fontTeko = new FontFaceObserver('Teko', { weight: 400 });
+
+		  
+		  Promise.all([fontWorkSans.load(), fontTeko.load()]).then(() => {
+			document.body.classList.add('loaded');
+		  }).catch(() => {
+			// Even if font loading fails, show the content
+			document.body.classList.add('loaded');
+		  });
+		</script>
+	  </body>
 </html>
