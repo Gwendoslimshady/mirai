@@ -1,5 +1,6 @@
 <script>
       import Nav from '$lib/components/Nav.svelte';
+      import Footer from '$lib/components/Footer.svelte';
       let navWidth = '20%'; // adjustable nav width
   </script>
   
@@ -23,6 +24,7 @@
       </p>
     </div>
   </section>
+  <section id="footer"><Footer /></section>
   
   <style>
     .impressum-section {

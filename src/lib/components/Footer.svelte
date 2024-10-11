@@ -8,7 +8,7 @@
     <ul class="footer-links">
       <li><a href="/terms">Terms of Service</a></li>
       <li><a href="/privacy">Privacy Policy</a></li>
-      <li><a href="/contact">Contact Us</a></li>
+      <li><a href="/impressum">Impressum</a></li> <!-- New Impressum Link -->
     </ul>
   </div>
 </footer>
@@ -51,14 +51,13 @@
   }
 
   .footer-links a {
-    color: #fff;
     text-decoration: none;
     font-size: 16px;
     transition: color 0.3s ease;
   }
 
   .footer-links a:hover {
-    color: #ccc;
+
   }
 
   /* Responsive footer for smaller screens */
