@@ -1,56 +1,55 @@
 <script>
-  // Any script logic can be added here if needed
+  // Add any necessary script logic here
 </script>
 
 <section class="about-section">
-  <h2>About Us</h2>
-  <p>
-    Welcome to our company! We are passionate about providing innovative solutions to our customers, 
-    with a focus on delivering the highest level of service and quality. Our mission is to bridge the gap between technology 
-    and real-world applications, helping businesses and individuals thrive in the modern digital landscape.
-  </p>
-  <p>
-    Our team of experts works tirelessly to stay ahead of industry trends and ensure that we offer the most cutting-edge tools 
-    and insights to help you succeed. Whether you are looking for advanced forecasting, personalized consulting, or reliable support, 
-    we are here to guide you every step of the way.
-  </p>
+  <div class="content">
+    <h1>MIRAI IS A BERLIN BASED TREND STUDIO SPECIALISED IN COLOUR TREND PREDICTIONS SERVING 13 DIFFERENT INDUSTRIES</h1>
+    <p>
+      Mirai is using the latest technology, and developed a precise filter tool to predict colour trends for your specific industry 
+      and its target group. Using this tool will enable you to gain a very quick and effective overview of colours that are going to 
+      be relevant in the next few years.
+    </p>
+    <p>
+      This allows productions to be planned further in advance, to be more precise in their calculations and to reduce overstock.
+    </p>
+  </div>
 </section>
 
 <style>
-  /* General styling for the About Us section */
+  /* Section styling */
   .about-section {
-    height: 100vh; /* Full viewport height */
-    width: 100vw; /* Full viewport width */
     display: flex;
-    flex-direction: column;
-    justify-content: center; /* Center content vertically */
-    align-items: center; /* Center content horizontally */
-    padding: 0 20px; /* Add padding to avoid edge collisions */
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100vw;
+    padding: 20px;
+    background-color: white;
     text-align: left;
   }
 
-  h2 {
-    font-size: 48px;
-    color: #333;
-    margin-bottom: 20px; /* Space below the heading */
+  /* Content container for proper spacing */
+  .content {
+    max-width: 800px;
+    width: 100%;
   }
 
+  /* Header styling */
+  h1 {
+    font-size: 36px;
+    font-weight: 700;
+    color: #000;
+    line-height: 1.4;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+
+  /* Paragraph styling */
   p {
-    font-size: 20px;
-    color: #555;
+    font-size: 18px;
+    color: #333;
     line-height: 1.6;
-    max-width: 800px; /* Limit the width for better readability */
-    margin-bottom: 20px; /* Space between paragraphs */
-  }
-
-  /* Media query for responsiveness */
-  @media (max-width: 768px) {
-    h2 {
-      font-size: 32px;
-    }
-
-    p {
-      font-size: 18px;
-    }
+    margin-bottom: 20px;
   }
 </style>

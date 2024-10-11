@@ -1,74 +1,102 @@
 <script>
-  // Logic for form handling, if needed, can be added here
+  // Add any additional script logic if needed
 </script>
 
 <section class="contact-section">
-  <h2>Contact Us</h2>
-  <p>If you have any questions or would like to get in touch, please fill out the form below.</p>
+  <div class="content">
+    <h1>GET IN TOUCH</h1>
+    
+    <form class="contact-form">
+      <div class="form-group">
+        <div class="input-field">
+          <label for="first-name">First Name</label>
+          <input type="text" id="first-name" name="first-name" required>
+        </div>
+        <div class="input-field">
+          <label for="last-name">Last Name</label>
+          <input type="text" id="last-name" name="last-name" required>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <div class="input-field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div class="input-field">
+          <label for="company">Company</label>
+          <input type="text" id="company" name="company">
+        </div>
+      </div>
+      
+      <div class="textarea-group">
+        <label for="message">Message</label>
+        <textarea id="message" name="message" rows="5" required></textarea>
+      </div>
+      
+      <button type="submit">Submit</button>
+    </form>
+  </div>
   
-  <form class="contact-form">
-    <div class="form-group">
-      <label for="name">Name</label>
-      <input type="text" id="name" name="name" required>
-    </div>
-
-    <div class="form-group">
-      <label for="email">Email</label>
-      <input type="email" id="email" name="email" required>
-    </div>
-
-    <div class="form-group">
-      <label for="message">Message</label>
-      <textarea id="message" name="message" rows="5" required></textarea>
-    </div>
-
-    <button type="submit">Send Message</button>
-  </form>
+  <footer class="footer">
+    <p>MIRAI © 2024</p>
+    <p><a href="/impressum">Impressum</a></p>
+  </footer>
 </section>
 
 <style>
-  /* General layout for the contact section */
+  /* Section layout */
   .contact-section {
-    height: 100vh; /* Full viewport height */
-    width: 100vw; /* Full viewport width */
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Center vertically */
-    align-items: center; /* Center horizontally */
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
     padding: 20px;
+    background-color: white;
+  }
+
+  .content {
+    max-width: 800px;
+    width: 100%;
+  }
+
+  /* Header styling */
+  h1 {
+    font-size: 36px;
+    font-weight: 700;
+    color: #000;
     text-align: center;
+    margin-bottom: 30px;
+    text-transform: uppercase;
   }
 
-  h2 {
-    font-size: 48px;
-    color: #333;
-    margin-bottom: 20px;
-  }
-
-  p {
-    font-size: 20px;
-    color: #555;
-    margin-bottom: 40px;
-  }
-
-  /* Styling for the contact form */
+  /* Contact form layout */
   .contact-form {
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Space between form fields */
-    width: 100%;
-    max-width: 600px; /* Restrict width for better readability */
+    gap: 20px;
+    border: 1px solid #333;
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
   }
 
-  /* Individual form groups */
+  /* Form groups */
   .form-group {
     display: flex;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .input-field {
+    display: flex;
     flex-direction: column;
-    text-align: left;
+    flex: 1;
   }
 
   label {
-    font-size: 18px;
+    font-size: 14px;
     color: #333;
     margin-bottom: 5px;
   }
@@ -81,37 +109,54 @@
     width: 100%;
   }
 
-  textarea {
-    resize: vertical;
+  .textarea-group {
+    display: flex;
+    flex-direction: column;
   }
 
   button {
-    padding: 10px 20px;
-    background-color: #007BFF;
+    background-color: black;
     color: white;
     border: none;
+    padding: 10px;
     font-size: 18px;
     cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    width: 100%;
   }
 
   button:hover {
-    background-color: #0056b3;
+    background-color: #333;
   }
 
-  /* Responsive design for smaller screens */
+  /* Footer section */
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 600px;
+  }
+
+  .footer p {
+    font-size: 14px;
+    color: #333;
+  }
+
+  .footer a {
+    color: #333;
+    text-decoration: none;
+  }
+
+  /* Responsive layout for smaller screens */
   @media (max-width: 768px) {
-    h2 {
-      font-size: 36px;
+    .form-group {
+      flex-direction: column;
     }
 
-    p {
-      font-size: 18px;
-    }
-
-    button {
-      font-size: 16px;
+    .content {
+      padding: 0 20px;
     }
   }
 </style>

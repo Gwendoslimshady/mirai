@@ -1,88 +1,66 @@
 <script>
-  // Add any necessary script logic here
+  // Add any additional script logic if needed
 </script>
 
-<section class="how-it-works">
-  <h2>How It Works</h2>
-  <div class="steps-container">
-    <div class="step">
-      <h3>Step 1: Sign Up</h3>
-      <p>Create an account to get started. Signing up is easy and only takes a few minutes.</p>
-    </div>
-    <div class="step">
-      <h3>Step 2: Customize Your Preferences</h3>
-      <p>Set your preferences and configure your personalized dashboard based on your needs.</p>
-    </div>
-    <div class="step">
-      <h3>Step 3: Start Forecasting</h3>
-      <p>Enter the relevant data to generate accurate forecasts and insights instantly.</p>
-    </div>
-    <div class="step">
-      <h3>Step 4: Review and Take Action</h3>
-      <p>Analyze the forecasts and make informed decisions to drive success in your projects or business.</p>
-    </div>
+<section class="how-it-works-section">
+  <div class="content">
+    <h1>SIMPLY CHOOSE YOUR PRODUCT CATEGORY, YOUR TARGET CUSTOMER AND THE YEAR/SEASON YOU WISH TO KNOW THE TREND COLOURS FOR UP TO 4 YEARS IN ADVANCE</h1>
+    <p>You will shortly after receive the colour prediction via email, there is no subscription needed.</p>
+    <p>The prediction package includes:</p>
+    <ul>
+      <li>20 different shades of your requested year/season</li>
+      <li>Key, accent, and base colours</li>
+      <li>A printed physical colour card is available upon request</li>
+    </ul>
   </div>
 </section>
 
 <style>
-  /* General styling for the How It Works section */
-  .how-it-works {
-    height: 100vh; /* Full viewport height */
-    width: 100vw; /* Full viewport width */
+  /* Section styling */
+  .how-it-works-section {
     display: flex;
-    flex-direction: column;
-    justify-content: center; /* Center content vertically */
-    align-items: center; /* Center content horizontally */
-    padding: 20px; /* Add padding to avoid edge collisions */
-    text-align: center;
-  }
-
-  h2 {
-    font-size: 48px;
-    color: #333;
-    margin-bottom: 40px; /* Space below the heading */
-  }
-
-  /* Container for the steps */
-  .steps-container {
-    display: flex;
-    flex-direction: column; /* Stack steps vertically */
-    gap: 30px; /* Space between steps */
-  }
-
-  /* Individual step styling */
-  .step {
-    max-width: 800px;
-    background-color: #fff;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100vw;
     padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    background-color: white;
+    text-align: left;
   }
 
-  h3 {
-    font-size: 28px;
-    color: #333;
-    margin-bottom: 10px;
+  /* Content inside the section */
+  .content {
+    max-width: 800px;
+    width: 100%;
   }
 
+  /* Styling for the header */
+  h1 {
+    font-size: 36px;
+    color: #000;
+    line-height: 1.4;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-transform: uppercase; /* For the big capital letters */
+  }
+
+  /* Paragraph styling */
   p {
     font-size: 18px;
-    color: #555;
-    line-height: 1.6;
+    color: #333;
+    margin-bottom: 20px;
   }
 
-  /* Responsive styling for smaller screens */
-  @media (max-width: 768px) {
-    h2 {
-      font-size: 32px;
-    }
+  /* Unordered list styling */
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
 
-    h3 {
-      font-size: 24px;
-    }
-
-    p {
-      font-size: 16px;
-    }
+  /* List item styling */
+  li {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 10px;
   }
 </style>
