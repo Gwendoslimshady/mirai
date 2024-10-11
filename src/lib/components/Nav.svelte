@@ -63,7 +63,7 @@
   <style>
 	/* Mobile burger menu and close button styling */
 	.menu-toggle {
-	  display: block;
+	  display: none; /* Hidden by default */
 	  font-size: 2.5rem;
 	  width: 60px;  /* Fixed width */
 	  height: 60px; /* Fixed height */
@@ -135,7 +135,7 @@
 	  left: 0;
 	  padding: 8rem;
 	  width: var(--nav-width);
-	  display: none;
+	  display: none; /* Hidden by default */
 	}
   
 	ul {
@@ -166,12 +166,22 @@
 	/* Responsive Styles */
 	@media (max-width: 768px) {
 	  /* Show the burger menu on mobile */
+	  .menu-toggle {
+		display: flex;
+	  }
+  
+	  /* Hide the regular nav on mobile */
 	  .nav-container {
 		display: none;
 	  }
 	}
   
 	@media (min-width: 769px) {
+	  /* Hide the burger menu on larger screens */
+	  .menu-toggle {
+		display: none;
+	  }
+  
 	  /* Show sidebar navigation on larger screens */
 	  .nav-container {
 		display: block;
