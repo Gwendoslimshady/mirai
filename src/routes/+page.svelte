@@ -12,6 +12,27 @@
 
   let gradient = generateRandomGradient(); // Generate a random gradient background
   let navWidth = '20%'; // adjustable nav width
+
+  import { onMount } from 'svelte';
+  import FontFaceObserver from 'fontfaceobserver';
+
+  let fontsLoaded = false;
+
+  onMount(() => {
+    const fontWorkSans = new FontFaceObserver('Work Sans', { weight: 400 });
+    const fontTeko = new FontFaceObserver('Teko', { weight: 400 });
+
+    // Load both fonts asynchronously
+    Promise.all([fontWorkSans.load(), fontTeko.load()])
+      .then(() => {
+        fontsLoaded = true;
+        document.documentElement.classList.add('fonts-loaded'); // Add class when fonts are loaded
+      })
+      .catch((err) => {
+        console.error('Font loading failed:', err);
+      });
+  });
+  
 </script>
 
 <RevealOverlay gradient={gradient} />
