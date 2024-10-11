@@ -2,6 +2,8 @@
 
 export function initTrailReveal(canvas, gradient) {
     const ctx = canvas.getContext('2d'); // Get the 2D rendering context
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     let trails = []; // Store trail positions
     const MAX_TRAIL_TIME = 2000; // Trail points remain for 2 seconds before they are removed
 

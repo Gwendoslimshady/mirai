@@ -10,8 +10,8 @@
 <nav class="nav-container">
 	<!-- nav content here -->
 	<ul>
-		<li><a class="nav-link" on:click={() => scrollToSection('header')}>Header</a></li>
-		<li><a class="nav-link" on:click={() => scrollToSection('about')}>About</a></li>
+		<li><a class="nav-link" on:click={() => scrollToSection('header')}>Start a forecast</a></li>
+		<li><a class="nav-link" on:click={() => scrollToSection('about')}>How it Works</a></li>
 		<li><a class="nav-link" on:click={() => scrollToSection('services')}>Services</a></li>
 		<li><a class="nav-link" on:click={() => scrollToSection('footer')}>Footer</a></li>
 	</ul>

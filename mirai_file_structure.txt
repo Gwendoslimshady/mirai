@@ -11,6 +11,7 @@ src/
             Services.svelte
         helpers/
             mouseHelpers.js
+            trailRevealHelpers.js
         utils/
     routes/
         +page.svelte
