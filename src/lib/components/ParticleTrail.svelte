@@ -4,77 +4,107 @@
     let canvas;
     let ctx;
     let particles = [];
+    let baseColor1, baseColor2; // Store the initial random colors
+
+    // Helper function to generate a random HSL color
+    function getRandomHSLColor() {
+        const h = Math.floor(Math.random() * 360); // Random hue
+        const s = 70 + Math.random() * 30; // Random saturation between 70% and 100%
+        const l = 50 + Math.random() * 20; // Random lightness between 50% and 70%
+        return { h, s, l };
+    }
+
+    // Generate the gradient based on the current hue shift
+    function createGlobalGradient(scrollRatio, color1, color2) {
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0); // Horizontal gradient
+
+        // Adjust the hue based on scroll ratio (0 to 1)
+        const hueShift1 = (color1.h + scrollRatio * 360) % 360;
+        const hueShift2 = (color2.h + scrollRatio * 360) % 360;
+
+        // Convert to HSL string format
+        const shiftedColor1 = `hsl(${hueShift1}, ${color1.s}%, ${color1.l}%)`;
+        const shiftedColor2 = `hsl(${hueShift2}, ${color2.s}%, ${color2.l}%)`;
+
+        gradient.addColorStop(0, shiftedColor1); // Adjusted color1 based on hue shift
+        gradient.addColorStop(1, shiftedColor2); // Adjusted color2 based on hue shift
+
+        return gradient;
+    }
 
     class Particle {
-        constructor(x, y) {
+        constructor(x, y, globalGradient) {
             this.x = x;
             this.y = y;
-            this.size = Math.random() * 40 + 20; // Set size on creation
-            this.alpha = 1; // Start fully opaque
+            this.size = Math.random() * 40 + 20;
+            this.alpha = 1;
 
-            // Wind effect: Add a horizontal speed (wind blowing to the right)
-            this.speedX = Math.random() * 3 + 1; // Random speed for natural wind effect
-            this.speedY = Math.random() * 2 - 1; // Optional: small vertical drift
+            // Wind effect
+            this.speedX = Math.random() * 3 + 1;
+            this.speedY = Math.random() * 2 - 1;
+
+            // Create a temporary canvas to sample the global gradient
+            const gradientCanvas = document.createElement('canvas');
+            gradientCanvas.width = canvas.width;
+            gradientCanvas.height = 1;
+            const gradientCtx = gradientCanvas.getContext('2d');
+            gradientCtx.fillStyle = globalGradient;
+            gradientCtx.fillRect(0, 0, canvas.width, 1);
+
+            // Sample the color based on the particle's x position
+            const imageData = gradientCtx.getImageData(this.x, 0, 1, 1).data;
+            this.color = `rgba(${imageData[0]}, ${imageData[1]}, ${imageData[2]}, 1)`;
+
+            // Store ellipse size and rotation (fixed for consistency)
+            this.radiusX = this.size * (Math.random() * 0.7 + 0.6);
+            this.radiusY = this.size * (Math.random() * 0.5 + 0.7);
+            this.rotation = Math.random() * Math.PI * 2;
         }
 
         update() {
-            // Move the particle with the wind
             this.x += this.speedX;
             this.y += this.speedY;
-
-            // Reduce alpha over time (optional if you want them to fade out)
-            this.alpha -= 0.01; // Control how quickly they fade
+            this.alpha -= 0.005;
         }
 
         draw(ctx) {
             if (this.alpha > 0.05) {
-                // Create a radial gradient for soft edges and color
                 let gradient = ctx.createRadialGradient(this.x, this.y, this.size * 0.1, this.x, this.y, this.size);
-                gradient.addColorStop(0, `rgba(255, 165, 0, ${this.alpha})`); // Example: Orange color
-                gradient.addColorStop(1, `rgba(255, 165, 0, 0)`); // Fades to transparent
+                gradient.addColorStop(0, `rgba(${this.color.match(/\d+/g).slice(0, 3).join(',')}, ${this.alpha})`);
+                gradient.addColorStop(1, `rgba(${this.color.match(/\d+/g).slice(0, 3).join(',')}, 0)`);
 
-                ctx.globalAlpha = this.alpha;
+                ctx.globalAlpha = 1;
                 ctx.fillStyle = gradient;
+
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                ctx.ellipse(this.x, this.y, this.radiusX, this.radiusY, this.rotation, 0, Math.PI * 2);
                 ctx.closePath();
                 ctx.fill();
-
-                ctx.globalAlpha = 1; // Reset for next particle
             }
         }
     }
 
-    function addParticle(x, y) {
-        particles.push(new Particle(x, y));
-        if (particles.length > 100) {
-            particles.shift(); // Keep number of particles under control
+    function addParticle(x, y, globalGradient) {
+        particles.push(new Particle(x, y, globalGradient));
+        if (particles.length > 500) {
+            particles.shift(); // Limit particle count
         }
     }
 
-    function animate() {
-        // Set white background and clear canvas before each new frame
-        ctx.fillStyle = '#fff'; // White background
+    function animate(globalGradient) {
+        ctx.fillStyle = '#fff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Update and draw all particles
         particles.forEach((particle, index) => {
-            particle.update(); // Ensure particles are updated every frame
+            particle.update();
             particle.draw(ctx);
 
-            // Remove particles that are too transparent
             if (particle.alpha <= 0.05) {
                 particles.splice(index, 1);
             }
         });
 
-        requestAnimationFrame(animate); // Loop animation
-    }
-
-    function handleMouseMove(e) {
-        const x = e.clientX;
-        const y = e.clientY;
-        addParticle(x, y); // Add particle at mouse position
+        requestAnimationFrame(() => animate(globalGradient));
     }
 
     onMount(() => {
@@ -82,23 +112,38 @@
         canvas.height = window.innerHeight;
         ctx = canvas.getContext('2d');
 
-        // Start animation loop
-        animate();
+        // Generate random colors when the page loads
+        baseColor1 = getRandomHSLColor();
+        baseColor2 = getRandomHSLColor();
 
-        // Handle mouse movement to create particles
-        window.addEventListener('mousemove', handleMouseMove);
+        let scrollRatio = 0;
 
-        // Resize canvas when the window is resized
+        // Create initial gradient based on random colors
+        let globalGradient = createGlobalGradient(scrollRatio, baseColor1, baseColor2);
+
+        animate(globalGradient);
+
+        window.addEventListener('mousemove', (e) => addParticle(e.clientX, e.clientY, globalGradient));
+
+        // Listen for scroll events and update the hue based on scroll position
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const documentHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            scrollRatio = scrollTop / documentHeight; // Calculate the scroll ratio (0 to 1)
+
+            // Update the gradient with the hue shift based on scroll position
+            globalGradient = createGlobalGradient(scrollRatio, baseColor1, baseColor2);
+        });
+
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
+            globalGradient = createGlobalGradient(scrollRatio, baseColor1, baseColor2);
         });
-
-        return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-        };
     });
 </script>
+
+<canvas bind:this={canvas}></canvas>
 
 <style>
     canvas {
@@ -111,5 +156,3 @@
         pointer-events: none; /* Let clicks pass through */
     }
 </style>
-
-<canvas bind:this={canvas}></canvas>
