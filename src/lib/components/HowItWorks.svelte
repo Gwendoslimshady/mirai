@@ -1,65 +1,66 @@
 <script>
-  // Add any additional script logic if needed
+  import Card from './Card.svelte';
 </script>
 
 <section class="how-it-works-section">
   <div class="content">
-    <h1>SIMPLY CHOOSE YOUR PRODUCT CATEGORY, YOUR TARGET CUSTOMER AND THE YEAR/SEASON YOU WISH TO KNOW THE TREND COLOURS FOR UP TO 4 YEARS IN ADVANCE</h1>
-    <p>You will shortly after receive the colour prediction via email, there is no subscription needed.</p>
-    <p>The prediction package includes:</p>
-    <ul>
-      <li>20 different shades of your requested year/season</li>
-      <li>Key, accent, and base colours</li>
-      <li>A printed physical colour card is available upon request</li>
-    </ul>
+    <h1>Explore Trend Colours 4 Years Ahead</h1>
+    <p>Receive a personalized prediction of the colours that will be trending for your product category.</p>
+    
+    <div class="cards-container">
+      <Card title="20 Different Shades" description="Explore up to 20 unique shades for each season." />
+      <Card title="Key, Accent, and Base Colours" description="Find key, accent, and base colours tailored to your preferences." />
+      <Card title="Printed Colour Card" description="Get a physical colour card delivered upon request." />
+    </div>
   </div>
 </section>
 
 <style>
-  /* Section styling */
   .how-it-works-section {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    width: 100vw;
-    padding: 20px;
-    text-align: left;
+    padding: 60px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
   }
 
-  /* Content inside the section */
-  .content {
-    max-width: 800px;
-    width: 100%;
-  }
-
-  /* Styling for the header */
-  h1 {
-    font-size: 36px;
-    color: #000;
-    line-height: 1.4;
+  .how-it-works-section h1 {
+    font-size: 2rem;
     font-weight: 700;
     margin-bottom: 20px;
-    text-transform: uppercase; /* For the big capital letters */
-  }
-
-  /* Paragraph styling */
-  p {
-    font-size: 18px;
     color: #333;
-    margin-bottom: 20px;
   }
 
-  /* Unordered list styling */
-  ul {
-    list-style-type: none;
-    padding: 0;
+  .how-it-works-section p {
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+    color: #666;
   }
 
-  /* List item styling */
-  li {
-    font-size: 18px;
-    color: #333;
-    margin-bottom: 10px;
+  .cards-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  @media (min-width: 768px) {
+    .cards-container {
+      grid-template-columns: repeat(3, 1fr); /* 3 columns for larger screens */
+    }
+  }
+
+  /* Smooth animations */
+  .card {
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 </style>
