@@ -4,90 +4,77 @@
     let canvas;
     let ctx;
     let particles = [];
-    let gradient; // Store the random gradient
 
     class Particle {
         constructor(x, y) {
             this.x = x;
             this.y = y;
-            this.size = Math.random() * 40 + 20; // Increase particle size
-            this.speedX = Math.random() * 3 - 1.5;
-            this.speedY = Math.random() * 3 - 1.5;
-            this.alpha = 1;
+            this.size = Math.random() * 40 + 20; // Set size on creation
+            this.alpha = 1; // Start fully opaque
+
+            // Wind effect: Add a horizontal speed (wind blowing to the right)
+            this.speedX = Math.random() * 3 + 1; // Random speed for natural wind effect
+            this.speedY = Math.random() * 2 - 1; // Optional: small vertical drift
         }
 
         update() {
+            // Move the particle with the wind
             this.x += this.speedX;
             this.y += this.speedY;
-            this.alpha -= 0.01; // Fade out particles slowly
+
+            // Reduce alpha over time (optional if you want them to fade out)
+            this.alpha -= 0.01; // Control how quickly they fade
         }
 
-        draw() {
-            if (this.alpha > 0.05) { // Ensure particles are visible enough
-                ctx.globalAlpha = this.alpha; // Apply fade-out effect
-                ctx.fillStyle = getGradientColor(this.x, this.y); // Use shared gradient
+        draw(ctx) {
+            if (this.alpha > 0.05) {
+                // Create a radial gradient for soft edges and color
+                let gradient = ctx.createRadialGradient(this.x, this.y, this.size * 0.1, this.x, this.y, this.size);
+                gradient.addColorStop(0, `rgba(255, 165, 0, ${this.alpha})`); // Example: Orange color
+                gradient.addColorStop(1, `rgba(255, 165, 0, 0)`); // Fades to transparent
+
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = gradient;
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                ctx.closePath();
                 ctx.fill();
-                ctx.globalAlpha = 1; // Reset alpha for next particles
+
+                ctx.globalAlpha = 1; // Reset for next particle
             }
         }
-    }
-
-    // Function to return a color from the shared random gradient based on position
-    function getGradientColor(x, y) {
-        return gradient; // Use the same random gradient for all particles
-    }
-
-    // Function to generate a random gradient
-    function generateRandomGradient() {
-        const color1 = randomColor();
-        const color2 = randomColor();
-        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-        gradient.addColorStop(0, color1);
-        gradient.addColorStop(1, color2);
-        return gradient;
-    }
-
-    // Helper function to generate a random RGB color
-    function randomColor() {
-        const r = Math.floor(Math.random() * 256);
-        const g = Math.floor(Math.random() * 256);
-        const b = Math.floor(Math.random() * 256);
-        return `rgb(${r}, ${g}, ${b})`;
     }
 
     function addParticle(x, y) {
         particles.push(new Particle(x, y));
         if (particles.length > 100) {
-            particles.shift(); // Remove the oldest particles
+            particles.shift(); // Keep number of particles under control
         }
     }
 
     function animate() {
-        // Clear the canvas and reset the background
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#fff';
+        // Set white background and clear canvas before each new frame
+        ctx.fillStyle = '#fff'; // White background
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Draw and update each particle
+        // Update and draw all particles
         particles.forEach((particle, index) => {
-            particle.update();
-            particle.draw();
+            particle.update(); // Ensure particles are updated every frame
+            particle.draw(ctx);
 
-            // Remove particles before they fully fade out to avoid flickering
+            // Remove particles that are too transparent
             if (particle.alpha <= 0.05) {
                 particles.splice(index, 1);
             }
         });
 
-        requestAnimationFrame(animate);
+        requestAnimationFrame(animate); // Loop animation
     }
 
     function handleMouseMove(e) {
         const x = e.clientX;
         const y = e.clientY;
-        addParticle(x, y);
+        addParticle(x, y); // Add particle at mouse position
     }
 
     onMount(() => {
@@ -95,18 +82,16 @@
         canvas.height = window.innerHeight;
         ctx = canvas.getContext('2d');
 
-        // Generate a random gradient when the page loads
-        gradient = generateRandomGradient();
-
+        // Start animation loop
         animate();
 
+        // Handle mouse movement to create particles
         window.addEventListener('mousemove', handleMouseMove);
 
-        // Resize canvas on window resize
+        // Resize canvas when the window is resized
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            gradient = generateRandomGradient(); // Recreate gradient on resize
         });
 
         return () => {
@@ -122,8 +107,8 @@
         left: 0;
         width: 100vw;
         height: 100vh;
-        z-index: -1; /* Ensure it's behind the content */
-        pointer-events: none; /* Allow clicks to pass through */
+        z-index: -1; /* Ensure the canvas is behind other content */
+        pointer-events: none; /* Let clicks pass through */
     }
 </style>
 
