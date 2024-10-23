@@ -16,7 +16,14 @@
       price = 2500; // Fixed price for "over 60"
     }
   };
+
+  // Define the handlePayment function
+  const handlePayment = () => {
+    alert(`Proceeding to pay $${price} USD for ${employeeCount} employees.`);
+    // Payment logic or redirection goes here
+  };
 </script>
+
 
 
 <section class="pricing-section">

@@ -1,188 +1,128 @@
 <script>
-  // Add any additional script logic if needed
+  let name = '';
+  let email = '';
+  let message = '';
+
+  const handleSubmit = () => {
+    alert(`Message from ${name} has been sent.`);
+  };
 </script>
 
+
 <section class="contact-section">
-  <div class="content">
-    <h1>GET IN TOUCH</h1>
-    
-    <form class="contact-form">
-      <div class="form-group">
-        <div class="input-field">
-          <label for="first-name">First Name</label>
-          <input type="text" id="first-name" name="first-name" required>
-        </div>
-        <div class="input-field">
-          <label for="last-name">Last Name</label>
-          <input type="text" id="last-name" name="last-name" required>
-        </div>
+  <div class="contact-card glass-card">
+    <h2>Contact Us</h2>
+    <form on:submit|preventDefault={handleSubmit}>
+      <div class="input-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" bind:value={name} placeholder="Your Name" required />
       </div>
-      
-      <div class="form-group">
-        <div class="input-field">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" required>
-        </div>
-        <div class="input-field">
-          <label for="company">Company</label>
-          <input type="text" id="company" name="company">
-        </div>
+      <div class="input-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" bind:value={email} placeholder="Your Email" required />
       </div>
-      
-      <div class="textarea-group">
+      <div class="input-group">
         <label for="message">Message</label>
-        <textarea id="message" name="message" rows="5" required></textarea>
+        <textarea id="message" bind:value={message} placeholder="Your Message" required></textarea>
       </div>
-      
-      <button type="submit">Submit</button>
+      <button type="submit" class="glass-button">Send Message</button>
     </form>
   </div>
-  
-  <footer class="footer">
-    <p>MIRAI © 2024</p>
-    <p><a href="/impressum">Impressum</a></p>
-  </footer>
 </section>
 
 <style>
-  /* General layout for the contact section */
   .contact-section {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
-  }
-
-  .content {
+    padding: 60px 20px;
     max-width: 800px;
-    width: 100%;
+    margin: 0 auto;
     text-align: center;
   }
 
-  /* Header styling */
-  h1 {
-    font-size: 36px;
-    font-weight: 700;
-    color: #333;
-    margin-bottom: 30px;
-    text-transform: uppercase;
-  }
-
-  /* Contact form styling */
-  .contact-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    background-color: #ffffff; /* White background for neumorphic effect */
-    padding: 30px;
+  .contact-card {
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 20px;
-    box-shadow: 
-      8px 8px 16px rgba(0, 0, 0, 0.1),
-      -8px -8px 16px rgba(255, 255, 255, 0.7);
-    max-width: 600px;
-    margin: 0 auto;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding: 30px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
-  .contact-form:hover {
-    transform: translateY(-5px); /* Slight lift on hover */
-    box-shadow: 
-      10px 10px 20px rgba(0, 0, 0, 0.15),
-      -10px -10px 20px rgba(255, 255, 255, 0.8);
+  .contact-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
   }
 
-  /* Form groups for grouping input fields */
-  .form-group {
+  .contact-card h2 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+  }
+
+  form {
     display: flex;
+    flex-direction: column;
     gap: 20px;
   }
 
-  .input-field {
-    flex: 1;
+  .input-group {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
   }
 
-  label {
-    font-size: 14px;
+  .input-group label {
+    font-size: 1rem;
+    font-weight: 500;
     color: #333;
     margin-bottom: 8px;
   }
 
-  input, textarea {
-    padding: 12px;
-    font-size: 16px;
-    border: none;
-    background-color: #ffffff; /* Neumorphic background */
-    border-radius: 12px;
-    box-shadow: 
-      inset 4px 4px 8px rgba(0, 0, 0, 0.1),
-      inset -4px -4px 8px rgba(255, 255, 255, 0.8);
-    transition: box-shadow 0.3s ease;
-  }
-
-  input:focus, textarea:focus {
-    outline: none;
-    box-shadow: 
-      inset 6px 6px 12px rgba(0, 0, 0, 0.2),
-      inset -6px -6px 12px rgba(255, 255, 255, 0.8);
-  }
-
-  .textarea-group {
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* Submit button styling */
-  button {
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    padding: 12px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 50px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-  }
-
-  button:hover {
-    background-color: #0056b3;
-    transform: translateY(-3px);
-  }
-
-  /* Footer section */
-  .footer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 30px;
+  .input-group input,
+  .input-group textarea {
     width: 100%;
-    max-width: 600px;
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.6);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
-  .footer p {
-    font-size: 14px;
+  .input-group input:focus,
+  .input-group textarea:focus {
+    border-color: #007bff;
+  }
+
+  .input-group textarea {
+    resize: none;
+    height: 120px;
+  }
+
+  .glass-button {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 15px 30px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     color: #333;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
-  .footer a {
-    color: #333;
-    text-decoration: none;
+  .glass-button:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
   }
 
-  /* Responsive layout for smaller screens */
-  @media (max-width: 768px) {
-    .form-group {
-      flex-direction: column;
-    }
-
-    .contact-form {
-      padding: 20px;
-    }
-
-    .content {
-      padding: 0 20px;
+  @media (min-width: 768px) {
+    .glass-button {
+      padding: 15px 40px;
     }
   }
 </style>
+
