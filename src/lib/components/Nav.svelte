@@ -1,21 +1,25 @@
 <script>
   import { fade } from 'svelte/transition'; 
+
+  // Configurable variables
   export let width;
-  
-  let isMenuOpen = false; 
-  
+  let isMenuOpen = false;
+
+  // Function to toggle the mobile menu
   function toggleMenu() {
     isMenuOpen = !isMenuOpen;
   }
-  
+
+  // Function to close the menu
   function closeMenu() {
     isMenuOpen = false;
   }
 
+  // Function to scroll to a section smoothly
   function scrollToSection(id) {
     const currentPath = window.location.pathname;
     const targetSection = `#${id}`;
-  
+
     if (currentPath === '/') {
       const section = document.querySelector(targetSection);
       section.scrollIntoView({ behavior: 'smooth' });
@@ -39,48 +43,81 @@
 {#if isMenuOpen}
   <div class="fullscreen-menu">
     <ul>
-      <li><a class="nav-link" on:click={() => scrollToSection('header')}>start a forecast</a></li>
-      <li><a class="nav-link" on:click={() => scrollToSection('how-it-works')}>how it works</a></li>
-      <li><a class="nav-link" on:click={() => scrollToSection('about')}>about</a></li>
-      <li><a class="nav-link" on:click={() => scrollToSection('prices')}>prices</a></li>
-      <li><a class="nav-link" on:click={() => scrollToSection('contact')}>contact</a></li>
-      <!-- New links for mobile -->
-      <li><a class="nav-link" href="/">Start</a></li>
-      <li><a class="nav-link" href="/forecast">Forecast</a></li>
-      <li><a class="nav-link" href="/login">Login</a></li>
+      {#each [
+        { section: 'header', label: 'start a forecast' },
+        { section: 'how-it-works', label: 'how it works' },
+        { section: 'about', label: 'about' },
+        { section: 'prices', label: 'prices' },
+        { section: 'contact', label: 'contact' },
+        { section: '', label: 'Start', href: '/' },
+        { section: '', label: 'Forecast', href: '/forecast' },
+        { section: '', label: 'Login', href: '/login' }
+      ] as link}
+        <li>
+          <a 
+            class="nav-link" 
+            on:click={() => scrollToSection(link.section)} 
+            href={link.href || 'javascript:void(0)'}
+          >
+            {link.label}
+          </a>
+        </li>
+      {/each}
     </ul>
   </div>
 {/if}
 
-<!-- Regular Sidebar Navigation (Left) -->
+<!-- Left Sidebar Navigation -->
 <nav class="left-nav">
   <ul>
-    <li><a class="nav-link" on:click={() => scrollToSection('header')}>mirai</a></li>
-    <li><a class="nav-link" on:click={() => scrollToSection('how-it-works')}>how it works</a></li>
-    <li><a class="nav-link" on:click={() => scrollToSection('about')}>about</a></li>
-    <li><a class="nav-link" on:click={() => scrollToSection('prices')}>prices</a></li>
-    <li><a class="nav-link" on:click={() => scrollToSection('contact')}>contact</a></li>
+    {#each [
+      { section: 'header', label: 'mirai' },
+      { section: 'how-it-works', label: 'how it works' },
+      { section: 'about', label: 'about' },
+      { section: 'prices', label: 'prices' },
+      { section: 'contact', label: 'contact' }
+    ] as link}
+      <li>
+        <a class="nav-link" on:click={() => scrollToSection(link.section)}>{link.label}</a>
+      </li>
+    {/each}
   </ul>
 </nav>
 
-<!-- Right-side fixed links -->
+<!-- Right Sidebar Navigation -->
 <nav class="right-nav">
   <ul>
-    <li><a class="nav-link" href="/forecast">start forecast</a></li>
-    <li><a class="nav-link" href="/login">Login</a></li>
+    {#each [
+      { href: '/forecast', label: 'start forecast' },
+      { href: '/login', label: 'Login' }
+    ] as link}
+      <li><a class="nav-link" href={link.href}>{link.label}</a></li>
+    {/each}
   </ul>
 </nav>
 
 <style>
-  /* Burger Menu and Mobile Styles */
+  /* Variables */
+  :root {
+    --menu-toggle-size: 2.5rem;
+    --nav-font-size: 1rem;
+    --nav-link-spacing: .35rem;
+    --nav-link-color: #333;
+    --nav-hover-color: #979797;
+    --burger-icon-padding: 20px;
+    --fullscreen-bg: rgba(255, 255, 255, 0.95);
+    --menu-padding: 80px;
+  }
+
+  /* Mobile burger menu button styling */
   .menu-toggle {
     display: none;
-    font-size: 2.5rem;
+    font-size: var(--menu-toggle-size);
     width: 60px;
     height: 60px;
     position: fixed;
-    top: 20px;
-    left: 20px;
+    top: var(--burger-icon-padding);
+    left: var(--burger-icon-padding);
     z-index: 1001;
     display: flex;
     justify-content: center;
@@ -90,134 +127,93 @@
     border: none;
   }
 
+  /* Fullscreen mobile menu */
   .fullscreen-menu {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: var(--fullscreen-bg);
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
-    padding: 80px;
+    padding: var(--menu-padding);
     z-index: 1000;
   }
 
-  .fullscreen-menu ul {
+  .fullscreen-menu ul, .left-nav ul, .right-nav ul {
     list-style-type: none;
     padding: 0;
     margin: 0;
-    width: 100%;
   }
 
-  .fullscreen-menu li {
+  .fullscreen-menu li, .left-nav li, .right-nav li {
     margin-bottom: 20px;
   }
 
-  .fullscreen-menu .nav-link {
-    font-size: 2rem;
-    font-weight: 600;
+  .nav-link {
+    font-size: var(--nav-font-size);
+    letter-spacing: var(--nav-link-spacing);
     text-decoration: none;
-    color: #333;
-    cursor: pointer;
+    color: var(--nav-link-color);
     transition: color 0.3s ease;
-  }
-
-  .fullscreen-menu .nav-link:hover {
-    color: #000;
-  }
-
-  /* Left-side Navigation Styling */
-  .left-nav {
-    position: fixed;
-    top: 20px; /* Align to the top of the screen */
-    left: 20px;
-    z-index: 10;
-    background-color: transparent;
-    padding-top: 100px;
-    padding-left: 100px; /* Adjust padding as needed */
-  }
-
-  .left-nav ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  .left-nav li {
-    display: inline-block;
-  }
-
-  /* Right-side Navigation Styling */
-  .right-nav {
-    position: fixed;
-    top: 20px; /* Align to the top of the screen */
-    right: 20px;
-    z-index: 10;
-    background-color: transparent;
-    padding-top: 100px;
-    padding-right: 100px; /* Adjust padding as needed */
-  }
-
-  .right-nav ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    text-align: right;
-  }
-
-  .right-nav li {
-    display: inline-block;
-  }
-
-  /* Hover effect for both left and right nav links */
-  .left-nav a, .right-nav a {
     position: relative;
-    font-size: 1rem;
-    font-weight: 500;
-    letter-spacing: .35rem;
-    color: #333;
-    text-decoration: none;
-    transition: color 0.3s ease;
+    font-family: 'Tako', sans-serif;
+    line-height: 1rem;
+    cursor: pointer; /* Add pointer cursor to indicate clickable link */
   }
 
-  .left-nav a::after, .right-nav a::after {
+  .nav-link:hover {
+    color: var(--nav-hover-color);
+  }
+
+  /* Hover effect */
+  .nav-link::after {
     content: '';
     position: absolute;
     width: 0;
     height: 1px;
-    background-color: #6b6f72; /* Color of the underline */
+    background-color: var(--nav-hover-color);
     left: 50%;
-    bottom: -5px; /* Distance from the text */
+    bottom: -5px;
     transition: width 0.3s ease, left 0.3s ease;
   }
 
-  .left-nav a:hover::after, .right-nav a:hover::after {
+  .nav-link:hover::after {
     width: 100%;
     left: 0;
   }
 
-  .left-nav a:hover, .right-nav a:hover {
-    color: #6b6f72; /* Change the text color on hover */
-    font-weight: bold; /* Optional: Make text bold */
+  /* Left and right navigation styles */
+  .left-nav, .right-nav {
+    position: fixed;
+    top: 20px;
+    z-index: 10;
   }
 
-  /* Responsive Styles */
+  .left-nav {
+    left: 20px;
+    padding-top: 100px;
+    padding-left: 100px;
+  }
+
+  .right-nav {
+    right: 20px;
+    padding-top: 100px;
+    padding-right: 100px;
+    text-align: right;
+  }
+
+  /* Responsive styles */
   @media (max-width: 768px) {
     .menu-toggle {
       display: flex;
     }
 
     .left-nav, .right-nav {
-      display: none; /* Hide both navs on mobile */
+      display: none;
     }
   }
 
@@ -227,7 +223,7 @@
     }
 
     .left-nav, .right-nav {
-      display: block; /* Show both navs on larger screens */
+      display: block;
     }
   }
 </style>
