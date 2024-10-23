@@ -156,14 +156,14 @@
 	}
   
 	.nav-link {
-	  font-size: 1.25rem;
+	  font-size: 1;
 	  font-weight: 500;
 	  letter-spacing: .35rem;
 	  color: #333;
 	  cursor: pointer;
 	  text-decoration: none;
 	  transition: font-weight 0.3s ease, color 0.3s ease;
-	  line-height: 2.5rem;
+	  line-height: 1.5rem;
 	}
   
 	.nav-link:hover {
