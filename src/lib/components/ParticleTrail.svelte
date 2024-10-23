@@ -36,7 +36,7 @@
         constructor(x, y, globalGradient) {
             this.x = x;
             this.y = y;
-            this.size = Math.random() * 40 + 20;
+            this.size = Math.random() * 80 + 20;
             this.alpha = 1;
 
             // Wind effect
@@ -86,7 +86,7 @@
 
     function addParticle(x, y, globalGradient) {
         particles.push(new Particle(x, y, globalGradient));
-        if (particles.length > 500) {
+        if (particles.length > 100) {
             particles.shift(); // Limit particle count
         }
     }
