@@ -1,6 +1,7 @@
 <script>
   import Nav from '$lib/components/Nav.svelte';
   import Footer from '$lib/components/Footer.svelte';
+  import ParticleTrail from '$lib/components/ParticleTrail.svelte';
   
   // Get the data from page.js
   export let data;
@@ -11,39 +12,41 @@
   console.log('Page Data:', data);
 </script>
 
+<ParticleTrail />
+
 <main>
   <Nav width={navWidth} />
-  <section class="forecast-section">
+  <section class="forecast-section glass-card">
     <h2>Start Your Forecast</h2>
     <form class="forecast-form">
       <!-- Input for first and last name -->
       <div class="form-row">
-        <div class="form-group">
+        <div class="input-group">
           <label for="first-name">First Name</label>
-          <input type="text" id="first-name" name="first-name" placeholder="First Name" required>
+          <input class="input-field" type="text" id="first-name" name="first-name" placeholder="First Name" required>
         </div>
-        <div class="form-group">
+        <div class="input-group">
           <label for="last-name">Last Name</label>
-          <input type="text" id="last-name" name="last-name" placeholder="Last Name" required>
+          <input class="input-field" type="text" id="last-name" name="last-name" placeholder="Last Name" required>
         </div>
       </div>
 
       <!-- Input for email and company -->
       <div class="form-row">
-        <div class="form-group">
+        <div class="input-group">
           <label for="email">Email</label>
-          <input type="email" id="email" name="email" placeholder="Email" required>
+          <input class="input-field" type="email" id="email" name="email" placeholder="Email" required>
         </div>
-        <div class="form-group">
+        <div class="input-group">
           <label for="company">Company</label>
-          <input type="text" id="company" name="company" placeholder="Company" required>
+          <input class="input-field" type="text" id="company" name="company" placeholder="Company" required>
         </div>
       </div>
 
       <!-- Company size dropdown -->
-      <div class="form-group">
+      <div class="input-group">
         <label for="company-size">Company Size</label>
-        <select id="company-size" name="company-size" required>
+        <select class="input-field" id="company-size" name="company-size" required>
           <option value="">Select company size</option>
           <option value="freelancer">Freelancer</option>
           <option value="1-10">&lt; 10 employees</option>
@@ -59,9 +62,9 @@
       </div>
 
       <!-- Product Category dropdown using pieces from fashion_colours -->
-      <div class="form-group">
+      <div class="input-group">
         <label for="category">Product Category</label>
-        <select id="category" name="category" required>
+        <select class="input-field" id="category" name="category" required>
           <option value="">Select a category</option>
           {#each data.categories || [] as category}
             <option value={category}>{category}</option>
@@ -70,9 +73,9 @@
       </div>
 
       <!-- Select dropdown for year/season using years from fashion_colours -->
-      <div class="form-group">
+      <div class="input-group">
         <label for="season">Year/Season</label>
-        <select id="season" name="season" required>
+        <select class="input-field" id="season" name="season" required>
           <option value="">Select a year/season</option>
           {#each data.years || [] as year}
             <option value={year}>{year}</option>
@@ -81,9 +84,9 @@
       </div>
 
       <!-- Generation dropdowns using static values since we don't have a generations collection -->
-      <div class="form-group">
+      <div class="input-group">
         <label for="generation">Generation</label>
-        <select id="generation" name="generation" required>
+        <select class="input-field" id="generation" name="generation" required>
           <option value="">Select a generation</option>
           <option value="gen_z">Gen Z</option>
           <option value="millennial">Millennial</option>
@@ -92,9 +95,9 @@
         </select>
       </div>
 
-      <div class="form-group">
+      <div class="input-group">
         <label for="target-generation">Target Customer Generation</label>
-        <select id="target-generation" name="target-generation" required>
+        <select class="input-field" id="target-generation" name="target-generation" required>
           <option value="">Select a target generation</option>
           <option value="gen_z">Gen Z</option>
           <option value="millennial">Millennial</option>
@@ -104,8 +107,8 @@
       </div>
 
       <!-- Submit button -->
-      <div class="form-group">
-        <button type="submit">Submit Forecast</button>
+      <div class="input-group">
+        <button type="submit" class="glass-button">Submit Forecast</button>
       </div>
     </form>
   </section>
@@ -118,84 +121,45 @@
     align-items: center;
     min-height: 100vh;
     padding: 20px;
+    background: transparent;
   }
 
   .forecast-section {
     width: 100%;
     max-width: 800px;
-    background-color: #fff;
-    padding: 30px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    margin: 40px auto;
   }
 
   h2 {
-    font-size: 32px;
+    font-size: 2.5rem;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
+    color: #333;
   }
 
   .form-row {
     display: flex;
     justify-content: space-between;
+    gap: 20px;
     margin-bottom: 20px;
   }
 
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 20px;
-    width: 48%;
-  }
-
-  .form-group label {
-    font-size: 14px;
-    margin-bottom: 5px;
-    font-weight: 500;
-  }
-
-  .form-group input,
-  .form-group select,
-  .form-group textarea {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .form-group textarea {
-    resize: vertical;
-    height: 150px;
-  }
-
-  button {
-    background-color: #000;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    width: 100%;
-  }
-
-  button:hover {
-    background-color: #333;
+  .form-row .input-group {
+    flex: 1;
   }
 
   @media (max-width: 768px) {
     .form-row {
       flex-direction: column;
+      gap: 0;
     }
 
-    .form-group {
-      width: 100%;
+    .forecast-section {
+      margin: 20px;
     }
 
-    button {
-      font-size: 18px;
+    h2 {
+      font-size: 2rem;
     }
   }
 </style>
