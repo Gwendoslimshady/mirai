@@ -29,6 +29,6 @@
 	"type": "module",
 	"dependencies": {
 		"fontfaceobserver": "^2.3.0",
-		"pocketbase": "^0.21.2"
+		"pocketbase": "^0.21.5"
 	}
 }

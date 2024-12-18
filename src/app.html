@@ -4,18 +4,36 @@
     <meta charset="utf-8" />
     <link rel="icon" href="%sveltekit.assets%/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="%sveltekit.metadata.description%" />
+    <meta name="keywords" content="%sveltekit.metadata.keywords%" />
+    <meta name="author" content="Mirai Studio" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="%sveltekit.metadata.url%" />
+    <meta property="og:title" content="%sveltekit.metadata.title%" />
+    <meta property="og:description" content="%sveltekit.metadata.description%" />
+    <meta property="og:image" content="%sveltekit.metadata.image%" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="%sveltekit.metadata.url%" />
+    <meta property="twitter:title" content="%sveltekit.metadata.title%" />
+    <meta property="twitter:description" content="%sveltekit.metadata.description%" />
+    <meta property="twitter:image" content="%sveltekit.metadata.image%" />
 
     <!-- Preconnect for Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rock+Salt&display=swap" />
 
-
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;500;700&display=swap" rel="stylesheet" />
 
-    <!-- Link to global CSS from the static folder -->
+    <!-- Link to global CSS -->
     <link rel="stylesheet" href="/styles/global.css" />
 
     %sveltekit.head%
