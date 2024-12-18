@@ -14,24 +14,19 @@
 </script>
 
 <ParticleTrail />
-<main>
+<main class="flex flex-row">
   <Nav width={navWidth} />
   <div class="sections">
-      <section id="header"><Header /></section>
-      <section id="how-it-works"><div class="section-content"><HowItWorks /></div></section>
-      <section id="about"><div class="section-content"><About /></div></section>
-      <section id="prices"><div class="section-content"><Prices/></div></section>
-      <section id="contact"><div class="section-content"><Contact /></div></section>
-      <section id="footer"><Footer /></section>
+      <section id="header" class="section"><Header /></section>
+      <section id="how-it-works" class="section"><div class="section-content"><HowItWorks /></div></section>
+      <section id="about" class="section"><div class="section-content"><About /></div></section>
+      <section id="prices" class="section"><div class="section-content"><Prices/></div></section>
+      <section id="contact" class="section"><div class="section-content"><Contact /></div></section>
+      <section id="footer" class="section"><Footer /></section>
   </div>
 </main>
 
 <style>
-  main {
-      display: flex;
-      flex-direction: row;
-  }
-
   .sections {
       display: flex;
       flex-direction: column;
@@ -40,7 +35,7 @@
       width: calc(100% - var(--nav-width));
   }
 
-  section {
+  .section {
       display: flex;
       justify-content: center;
       align-items: center;

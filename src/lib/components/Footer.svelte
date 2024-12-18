@@ -4,70 +4,11 @@
 
 <footer class="footer">
   <div class="footer-content">
-    <p>&copy; 2023 Mirai. All rights reserved.</p>
+    <p class="text-sm">&copy; 2023 Mirai. All rights reserved.</p>
     <ul class="footer-links">
-      <li><a href="/terms">Terms of Service</a></li>
-      <li><a href="/privacy">Privacy Policy</a></li>
-      <li><a href="/impressum">Impressum</a></li> <!-- New Impressum Link -->
+      <li><a href="/terms" class="text-sm">Terms of Service</a></li>
+      <li><a href="/privacy" class="text-sm">Privacy Policy</a></li>
+      <li><a href="/impressum" class="text-sm">Impressum</a></li>
     </ul>
   </div>
 </footer>
-
-<style>
-  /* Footer styling */
-  .footer {
-    width: 100vw;
-    padding: 20px;
-    text-align: center;
-    position: relative;
-    bottom: 0;
-  }
-
-  /* Content inside the footer */
-  .footer-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
-  }
-
-  p {
-    font-size: 16px;
-    margin: 0;
-  }
-
-  /* Footer links */
-  .footer-links {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    gap: 15px;
-  }
-
-  .footer-links li {
-    display: inline;
-  }
-
-  .footer-links a {
-    text-decoration: none;
-    font-size: 16px;
-    transition: color 0.3s ease;
-  }
-
-  .footer-links a:hover {
-
-  }
-
-  /* Responsive footer for smaller screens */
-  @media (max-width: 768px) {
-    p {
-      font-size: 14px;
-    }
-
-    .footer-links a {
-      font-size: 14px;
-    }
-  }
-</style>

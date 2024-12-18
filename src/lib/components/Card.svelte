@@ -3,14 +3,7 @@
   export let content;
 </script>
 
-<div class="glass card">
+<div class="glass-card mb-20">
   <h2>{title}</h2>
-  <p>{content}</p>
+  <p class="text-large">{content}</p>
 </div>
-
-<style>
-  /* Specific styles for Card component */
-  .card {
-    margin: 20px 0;
-  }
-</style>
