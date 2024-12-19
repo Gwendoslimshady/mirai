@@ -30,30 +30,104 @@
 </script>
 
 <section class="container p-60 text-center">
-  <h1 class="text-xl">Select Employee Count</h1>
-  <p class="text-md">Slide to choose the number of employees and view the corresponding price.</p>
+  <h1 class="text-xl mb-20">Select Employee Count</h1>
+  <p class="text-md mb-40">Slide to choose the number of employees and view the corresponding price.</p>
   
-  <div class="slider-container">
-    <input 
-      type="range" 
-      min="1" 
-      max="70" 
-      step="1" 
-      value={employeeCount} 
-      on:input={handleInput}
-      class="slider" 
-    />
-    
-    <div class="slider-labels">
-      <span>1</span>
-      <span>10</span>
-      <span>30</span>
-      <span>60+</span>
+  <div class="glass-card">
+    <div class="slider-container mb-30">
+      <input 
+        type="range" 
+        min="1" 
+        max="70" 
+        step="1" 
+        value={employeeCount} 
+        on:input={handleInput}
+        class="slider" 
+      />
+      
+      <div class="slider-labels">
+        <span class="text-md">1</span>
+        <span class="text-md">10</span>
+        <span class="text-md">30</span>
+        <span class="text-md">60+</span>
+      </div>
+    </div>
+
+    <div class="price-display" on:click={handlePayment}>
+      <h2 class="text-xl mb-20">{employeeCount > 60 ? 'Over 60 Employees' : `${employeeCount} Employees`}</h2>
+      <p class="text-huge">${price}</p>
+      <p class="text-md">USD/month</p>
     </div>
   </div>
-
-  <div class="price-display" on:click={handlePayment}>
-    <h2>{employeeCount > 60 ? 'Over 60 Employees' : `${employeeCount} Employees`}</h2>
-    <p>${price} USD/month</p>
-  </div>
 </section>
+
+<style>
+  .slider-container {
+    width: 100%;
+    padding: 0 20px;
+  }
+
+  .slider {
+    width: 100%;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+    outline: none;
+    -webkit-appearance: none;
+  }
+
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+
+  .slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+  }
+
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    padding: 0 10px;
+  }
+
+  .price-display {
+    cursor: pointer;
+    padding: 20px;
+    transition: transform 0.2s ease;
+  }
+
+  .price-display:hover {
+    transform: translateY(-5px);
+  }
+
+  @media (max-width: 768px) {
+    .slider-container {
+      padding: 0 10px;
+    }
+
+    .slider-labels span {
+      font-size: 0.9rem;
+    }
+
+    :global(.text-huge) {
+      font-size: 4rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .slider-labels span {
+      font-size: 0.8rem;
+    }
+
+    :global(.text-huge) {
+      font-size: 3rem;
+    }
+  }
+</style>

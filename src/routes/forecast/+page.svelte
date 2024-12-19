@@ -5,129 +5,141 @@
   
   // Get the data from page.js
   export let data;
-  
-  let navWidth = '20%';
-  
-  // Log the data to console
-  console.log('Page Data:', data);
 </script>
 
 <ParticleTrail />
 
-<main>
-  <Nav width={navWidth} />
-  <section class="forecast-section glass-card">
-    <h2>Start Your Forecast</h2>
-    <form class="forecast-form">
-      <!-- Input for first and last name -->
-      <div class="form-row">
-        <div class="input-group">
-          <label for="first-name">First Name</label>
-          <input class="input-field" type="text" id="first-name" name="first-name" placeholder="First Name" required>
+<div class="page-layout">
+  <nav class="nav-column nav-left">
+    <Nav position="left" />
+  </nav>
+  
+  <main class="main-content">
+    <section class="forecast-section glass-card">
+      <h2>Start Your Forecast</h2>
+      <form class="forecast-form">
+        <!-- Input for first and last name -->
+        <div class="form-row">
+          <div class="input-group">
+            <label for="first-name">First Name</label>
+            <input class="input-field" type="text" id="first-name" name="first-name" placeholder="First Name" required>
+          </div>
+          <div class="input-group">
+            <label for="last-name">Last Name</label>
+            <input class="input-field" type="text" id="last-name" name="last-name" placeholder="Last Name" required>
+          </div>
         </div>
-        <div class="input-group">
-          <label for="last-name">Last Name</label>
-          <input class="input-field" type="text" id="last-name" name="last-name" placeholder="Last Name" required>
+
+        <!-- Input for email and company -->
+        <div class="form-row">
+          <div class="input-group">
+            <label for="email">Email</label>
+            <input class="input-field" type="email" id="email" name="email" placeholder="Email" required>
+          </div>
+          <div class="input-group">
+            <label for="company">Company</label>
+            <input class="input-field" type="text" id="company" name="company" placeholder="Company" required>
+          </div>
         </div>
-      </div>
 
-      <!-- Input for email and company -->
-      <div class="form-row">
+        <!-- Company size dropdown -->
         <div class="input-group">
-          <label for="email">Email</label>
-          <input class="input-field" type="email" id="email" name="email" placeholder="Email" required>
+          <label for="company-size">Company Size</label>
+          <select class="input-field" id="company-size" name="company-size" required>
+            <option value="">Select company size</option>
+            <option value="freelancer">Freelancer</option>
+            <option value="1-10">&lt; 10 employees</option>
+            <option value="10-20">&gt; 10 employees</option>
+            <option value="20-50">&gt; 20 employees</option>
+            <option value="50-100">&gt; 50 employees</option>
+            <option value="100-200">&gt; 100 employees</option>
+            <option value="200-500">&gt; 200 employees</option>
+            <option value="500-1000">&gt; 500 employees</option>
+            <option value="1000-2500">&gt; 1000 employees</option>
+            <option value="2500+">&gt; 2500 employees</option>
+          </select>
         </div>
+
+        <!-- Product Category dropdown using pieces from fashion_colours -->
         <div class="input-group">
-          <label for="company">Company</label>
-          <input class="input-field" type="text" id="company" name="company" placeholder="Company" required>
+          <label for="category">Product Category</label>
+          <select class="input-field" id="category" name="category" required>
+            <option value="">Select a category</option>
+            {#each data.categories || [] as category}
+              <option value={category}>{category}</option>
+            {/each}
+          </select>
         </div>
-      </div>
 
-      <!-- Company size dropdown -->
-      <div class="input-group">
-        <label for="company-size">Company Size</label>
-        <select class="input-field" id="company-size" name="company-size" required>
-          <option value="">Select company size</option>
-          <option value="freelancer">Freelancer</option>
-          <option value="1-10">&lt; 10 employees</option>
-          <option value="10-20">&gt; 10 employees</option>
-          <option value="20-50">&gt; 20 employees</option>
-          <option value="50-100">&gt; 50 employees</option>
-          <option value="100-200">&gt; 100 employees</option>
-          <option value="200-500">&gt; 200 employees</option>
-          <option value="500-1000">&gt; 500 employees</option>
-          <option value="1000-2500">&gt; 1000 employees</option>
-          <option value="2500+">&gt; 2500 employees</option>
-        </select>
-      </div>
+        <!-- Select dropdown for year/season using years from fashion_colours -->
+        <div class="input-group">
+          <label for="season">Year/Season</label>
+          <select class="input-field" id="season" name="season" required>
+            <option value="">Select a year/season</option>
+            {#each data.years || [] as year}
+              <option value={year}>{year}</option>
+            {/each}
+          </select>
+        </div>
 
-      <!-- Product Category dropdown using pieces from fashion_colours -->
-      <div class="input-group">
-        <label for="category">Product Category</label>
-        <select class="input-field" id="category" name="category" required>
-          <option value="">Select a category</option>
-          {#each data.categories || [] as category}
-            <option value={category}>{category}</option>
-          {/each}
-        </select>
-      </div>
+        <!-- Generation dropdowns using static values since we don't have a generations collection -->
+        <div class="input-group">
+          <label for="generation">Generation</label>
+          <select class="input-field" id="generation" name="generation" required>
+            <option value="">Select a generation</option>
+            <option value="gen_z">Gen Z</option>
+            <option value="millennial">Millennial</option>
+            <option value="gen_x">Gen X</option>
+            <option value="baby_boomer">Baby Boomer</option>
+          </select>
+        </div>
 
-      <!-- Select dropdown for year/season using years from fashion_colours -->
-      <div class="input-group">
-        <label for="season">Year/Season</label>
-        <select class="input-field" id="season" name="season" required>
-          <option value="">Select a year/season</option>
-          {#each data.years || [] as year}
-            <option value={year}>{year}</option>
-          {/each}
-        </select>
-      </div>
+        <div class="input-group">
+          <label for="target-generation">Target Customer Generation</label>
+          <select class="input-field" id="target-generation" name="target-generation" required>
+            <option value="">Select a target generation</option>
+            <option value="gen_z">Gen Z</option>
+            <option value="millennial">Millennial</option>
+            <option value="gen_x">Gen X</option>
+            <option value="baby_boomer">Baby Boomer</option>
+          </select>
+        </div>
 
-      <!-- Generation dropdowns using static values since we don't have a generations collection -->
-      <div class="input-group">
-        <label for="generation">Generation</label>
-        <select class="input-field" id="generation" name="generation" required>
-          <option value="">Select a generation</option>
-          <option value="gen_z">Gen Z</option>
-          <option value="millennial">Millennial</option>
-          <option value="gen_x">Gen X</option>
-          <option value="baby_boomer">Baby Boomer</option>
-        </select>
-      </div>
+        <!-- Submit button -->
+        <div class="input-group">
+          <button type="submit" class="glass-button">Submit Forecast</button>
+        </div>
+      </form>
+    </section>
+  </main>
 
-      <div class="input-group">
-        <label for="target-generation">Target Customer Generation</label>
-        <select class="input-field" id="target-generation" name="target-generation" required>
-          <option value="">Select a target generation</option>
-          <option value="gen_z">Gen Z</option>
-          <option value="millennial">Millennial</option>
-          <option value="gen_x">Gen X</option>
-          <option value="baby_boomer">Baby Boomer</option>
-        </select>
-      </div>
-
-      <!-- Submit button -->
-      <div class="input-group">
-        <button type="submit" class="glass-button">Submit Forecast</button>
-      </div>
-    </form>
-  </section>
-</main>
+  <nav class="nav-column nav-right">
+    <Nav position="right" />
+  </nav>
+</div>
 
 <style>
-  main {
+  .page-layout {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    width: 100%;
     min-height: 100vh;
-    padding: 20px;
-    background: transparent;
+    gap: 2rem;
+  }
+
+  .nav-column {
+    flex: 0 0 200px;
+    padding: 2rem 1rem;
+  }
+
+  .main-content {
+    flex: 1;
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
   }
 
   .forecast-section {
     width: 100%;
-    max-width: 800px;
-    margin: 40px auto;
   }
 
   h2 {
@@ -149,13 +161,26 @@
   }
 
   @media (max-width: 768px) {
+    .page-layout {
+      flex-direction: column;
+    }
+
+    .nav-column {
+      display: none;
+    }
+
+    /* Show only the left navigation on mobile */
+    .nav-left {
+      display: block;
+    }
+
+    .main-content {
+      padding: 1rem;
+    }
+
     .form-row {
       flex-direction: column;
       gap: 0;
-    }
-
-    .forecast-section {
-      margin: 20px;
     }
 
     h2 {

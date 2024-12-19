@@ -3,13 +3,13 @@
 </script>
 
 <section class="container-lg p-60 text-center">
-	<h1 class="text-xl">Explore Trend Colours 4 Years Ahead</h1>
-	<p class="text-md">
+	<h1 class="text-xl mb-20">Explore Trend Colours 4 Years Ahead</h1>
+	<p class="text-md mb-40">
 		Receive a personalized prediction of the colours that will be trending for your product
 		category.
 	</p>
 
-	<div class="grid grid-1 grid-3 gap-30">
+	<div class="features-grid">
 		<div class="fade-in-up">
 			<Card
 				title="20 Different Shades"
@@ -30,3 +30,18 @@
 		</div>
 	</div>
 </section>
+
+<style>
+	.features-grid {
+		display: grid;
+		gap: 30px;
+		grid-template-columns: 1fr;
+		margin-top: 2rem;
+	}
+
+	@media (min-width: 1024px) {
+		.features-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+</style>

@@ -29,6 +29,20 @@
     <meta property="twitter:image" content={metadata.image} />
 </svelte:head>
   
-<div transition:fade={{ duration: 500 }}>
+<div class="layout" transition:fade={{ duration: 500 }}>
     <slot />
 </div>
+
+<style>
+    .layout {
+        display: flex;
+        min-height: 100vh;
+        width: 100%;
+    }
+
+    @media (max-width: 768px) {
+        .layout {
+            flex-direction: column;
+        }
+    }
+</style>
