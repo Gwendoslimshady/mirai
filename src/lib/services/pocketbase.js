@@ -3,6 +3,13 @@ import PocketBase from 'pocketbase';
 // Use environment variable for the API URL
 export const pb = new PocketBase(import.meta.env.VITE_API_URL);
 
+/**
+ * Logs out the current user
+ */
+export const logout = () => {
+  pb.authStore.clear();
+};
+
 export const getColours = async () => {
   try {
     const records = await pb.collection('fashion_colours').getFullList({

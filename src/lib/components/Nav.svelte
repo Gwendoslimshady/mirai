@@ -5,13 +5,15 @@
   /** @type {'left' | 'right'} */
   export let position = 'left';
 
-  let isMenuOpen = false;
-  let isLoggedIn = false;
+let isMenuOpen = false;
+let isLoggedIn = false;
+let username = '';
 
-  // Subscribe to auth store changes
-  authStore.subscribe(value => {
-    isLoggedIn = !!value;
-  });
+// Subscribe to auth store changes
+authStore.subscribe(value => {
+  isLoggedIn = !!value;
+  username = value?.username || '';
+});
 
   /** @typedef {{ section: string; label: string; href?: undefined; onClick?: undefined }} SectionLink */
   /** @typedef {{ href: string; label: string; section?: undefined; onClick?: (e: MouseEvent) => void }} HrefLink */
@@ -41,16 +43,16 @@
     closeMenu();
   }
 
-  import { pb } from '$lib/services/pocketbase';
+  import { logout } from '$lib/services/pocketbase';
 
   /** 
-   * Handle auth click
-   * @param {MouseEvent} e 
+   * Handles authentication actions (login/logout)
+   * @param {MouseEvent} e - Click event
    */
   function handleAuth(e) {
     e.preventDefault();
     if (isLoggedIn) {
-      pb.authStore.clear();
+      logout();
     } else {
       window.location.href = '/login';
     }
@@ -67,6 +69,7 @@
 
   /** @type {NavLink[]} */
   $: rightMenuItems = [
+    ...(isLoggedIn ? [{ href: '#', label: username }] : []),
     { 
       href: '#',
       label: isLoggedIn ? 'log out' : 'login',

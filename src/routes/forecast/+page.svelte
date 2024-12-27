@@ -5,11 +5,24 @@
   import LoginModal from '$lib/components/LoginModal.svelte';
   import { authStore } from '$lib/stores/auth';
   import { page } from '$app/stores';
+  import { updateForecastForm } from '$lib/stores/forecast';
   
   // Get the data from page.js
   export let data;
 
   let showLoginModal = false;
+  let firstName = '';
+  let lastName = '';
+  let email = '';
+
+  // Subscribe to auth store changes to populate form fields
+  authStore.subscribe(value => {
+    if (value) {
+      firstName = value.first_name || '';
+      lastName = value.last_name || '';
+      email = value.email || '';
+    }
+  });
   /** @type {HTMLSelectElement | null} */
   let companySizeSelect = null;
 
@@ -50,6 +63,37 @@
 
   function handleLoginSuccess() {
     showLoginModal = false;
+  }
+
+  /**
+   * Handle form submission and redirect to forecasted page with params
+   * @param {Event} event - Form submission event
+   */
+  function handleSubmit(event) {
+    event.preventDefault();
+    const form = /** @type {HTMLFormElement} */ (event.target);
+    const formData = new FormData(form);
+    
+    const year = formData.get('season');
+    const generation = formData.get('generation');
+    
+    // Only proceed if year and generation are selected
+    if (year && generation) {
+      // Save form data to session storage
+      updateForecastForm({
+        companySize: /** @type {string} */ (formData.get('company-size')),
+        category: /** @type {string} */ (formData.get('category')),
+        year: /** @type {string} */ (year),
+        generation: /** @type {string} */ (generation)
+      });
+
+      // Redirect to forecasted page
+      const params = new URLSearchParams({
+        year: /** @type {string} */ (year),
+        generation: /** @type {string} */ (generation)
+      });
+      window.location.href = `/forcasted?${params.toString()}`;
+    }
   }
 
   /**
@@ -109,25 +153,25 @@
       <h2>Start Your Forecast</h2>
       
       {#if $authStore}
-        <form class="forecast-form">
+        <form class="forecast-form" on:submit={handleSubmit}>
           <!-- Personal Information Section -->
           <div class="form-section mb-40">
             <h3>Personal Information</h3>
             <div class="form-row">
               <div class="input-group">
                 <label for="first-name">First Name</label>
-                <input class="input-field" type="text" id="first-name" name="first-name" placeholder="First Name" required>
+              <input class="input-field" type="text" id="first-name" name="first-name" placeholder="First Name" bind:value={firstName} required>
               </div>
               <div class="input-group">
                 <label for="last-name">Last Name</label>
-                <input class="input-field" type="text" id="last-name" name="last-name" placeholder="Last Name" required>
+              <input class="input-field" type="text" id="last-name" name="last-name" placeholder="Last Name" bind:value={lastName} required>
               </div>
             </div>
 
             <div class="form-row">
               <div class="input-group">
                 <label for="email">Email</label>
-                <input class="input-field" type="email" id="email" name="email" placeholder="Email" required>
+              <input class="input-field" type="email" id="email" name="email" placeholder="Email" bind:value={email} required>
               </div>
               <div class="input-group">
                 <label for="company">Company</label>
