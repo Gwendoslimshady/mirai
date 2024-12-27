@@ -13,8 +13,8 @@
     isLoggedIn = !!value;
   });
 
-  /** @typedef {{ section: string; label: string; href?: undefined }} SectionLink */
-  /** @typedef {{ href: string; label: string; section?: undefined }} HrefLink */
+  /** @typedef {{ section: string; label: string; href?: undefined; onClick?: undefined }} SectionLink */
+  /** @typedef {{ href: string; label: string; section?: undefined; onClick?: (e: MouseEvent) => void }} HrefLink */
   /** @typedef {SectionLink | HrefLink} NavLink */
 
   function toggleMenu() {
@@ -41,8 +41,24 @@
     closeMenu();
   }
 
+  import { pb } from '$lib/services/pocketbase';
+
+  /** 
+   * Handle auth click
+   * @param {MouseEvent} e 
+   */
+  function handleAuth(e) {
+    e.preventDefault();
+    if (isLoggedIn) {
+      pb.authStore.clear();
+    } else {
+      window.location.href = '/login';
+    }
+  }
+
   /** @type {NavLink[]} */
   const leftMenuItems = [
+    { href: '/forecast', label: 'start forecast' },
     { section: 'how-it-works', label: 'how it works' },
     { section: 'about', label: 'about' },
     { section: 'prices', label: 'prices' },
@@ -51,8 +67,11 @@
 
   /** @type {NavLink[]} */
   $: rightMenuItems = [
-    { href: '/forecast', label: 'start forecast' },
-    { href: '/login', label: isLoggedIn ? 'log out' : 'login' }
+    { 
+      href: '#',
+      label: isLoggedIn ? 'log out' : 'login',
+      onClick: handleAuth
+    }
   ];
 
   /** @type {NavLink[]} */
@@ -89,7 +108,16 @@
       <ul class="nav-menu">
         {#each mobileMenuItems as link}
           <li transition:slide={{ duration: 200, delay: 100 }}>
-            {#if 'href' in link}
+            {#if 'href' in link && link.onClick}
+              <a 
+                class="nav-link" 
+                href={link.href}
+                role="menuitem"
+                on:click|preventDefault={link.onClick}
+              >
+                {link.label}
+              </a>
+            {:else if 'href' in link}
               <a 
                 class="nav-link" 
                 href={link.href}
@@ -118,15 +146,24 @@
   <ul class="nav-menu" role="menubar">
     {#each menuItems as link}
       <li role="none">
-        {#if 'href' in link}
-          <a 
-            class="nav-link" 
-            href={link.href}
-            role="menuitem"
-          >
-            {link.label}
-          </a>
-        {:else}
+            {#if 'href' in link && link.onClick}
+              <a 
+                class="nav-link" 
+                href={link.href}
+                role="menuitem"
+                on:click|preventDefault={link.onClick}
+              >
+                {link.label}
+              </a>
+            {:else if 'href' in link}
+              <a 
+                class="nav-link" 
+                href={link.href}
+                role="menuitem"
+              >
+                {link.label}
+              </a>
+            {:else}
           <a 
             class="nav-link" 
             href="#{link.section}"
