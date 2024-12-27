@@ -39,6 +39,15 @@
     companySizeSelect.value = getCompanySizeValue(employeeCount);
   }
 
+  // Track selected company size for price display
+  let selectedCompanySize = '';
+
+  /** @param {Event} event */
+  function handleCompanySizeChange(event) {
+    const select = /** @type {HTMLSelectElement} */ (event.target);
+    selectedCompanySize = select.value;
+  }
+
   function handleLoginSuccess() {
     showLoginModal = false;
   }
@@ -54,6 +63,38 @@
     const season = prefix === 'ss' ? 'Spring Summer' : 'Fall Winter';
     return `${year} ${season}`;
   }
+
+  /**
+   * Get price based on company size selection
+   * @param {string} size - Selected company size
+   * @returns {number} Price for the selected company size
+   */
+  function getCompanySizePrice(size) {
+    switch (size) {
+      case 'freelancer':
+        return 30;
+      case '1-10':
+        return 100;
+      case '10-20':
+        return 250;
+      case '20-50':
+        return 400;
+      case '50-100':
+        return 600;
+      case '100-200':
+        return 1000;
+      case '200-500':
+        return 1500;
+      case '500-1000':
+        return 2000;
+      case '1000-2500':
+        return 2500;
+      case '2500+':
+        return 3000;
+      default:
+        return 0;
+    }
+  }
 </script>
 
 <ParticleTrail />
@@ -63,91 +104,102 @@
     <Nav position="left" />
   </nav>
   
-  <main class="main-content">
-    <section class="forecast-section glass-card">
+  <main class="main-content p-60">
+    <section class="forecast-section glass p-30">
       <h2>Start Your Forecast</h2>
       
       {#if $authStore}
         <form class="forecast-form">
-          <!-- Input for first and last name -->
-          <div class="form-row">
-            <div class="input-group">
-              <label for="first-name">First Name</label>
-              <input class="input-field" type="text" id="first-name" name="first-name" placeholder="First Name" required>
+          <!-- Personal Information Section -->
+          <div class="form-section mb-40">
+            <h3>Personal Information</h3>
+            <div class="form-row">
+              <div class="input-group">
+                <label for="first-name">First Name</label>
+                <input class="input-field" type="text" id="first-name" name="first-name" placeholder="First Name" required>
+              </div>
+              <div class="input-group">
+                <label for="last-name">Last Name</label>
+                <input class="input-field" type="text" id="last-name" name="last-name" placeholder="Last Name" required>
+              </div>
             </div>
+
+            <div class="form-row">
+              <div class="input-group">
+                <label for="email">Email</label>
+                <input class="input-field" type="email" id="email" name="email" placeholder="Email" required>
+              </div>
+              <div class="input-group">
+                <label for="company">Company</label>
+                <input class="input-field" type="text" id="company" name="company" placeholder="Company" required>
+              </div>
+            </div>
+
             <div class="input-group">
-              <label for="last-name">Last Name</label>
-              <input class="input-field" type="text" id="last-name" name="last-name" placeholder="Last Name" required>
+              <label for="company-size">Company Size</label>
+              <select 
+                bind:this={companySizeSelect}
+                class="input-field" 
+                id="company-size" 
+                name="company-size"
+                on:change={handleCompanySizeChange}
+                required
+              >
+                <option value="">Select company size</option>
+                <option value="freelancer">Freelancer</option>
+                <option value="1-10">Less than 10 employees</option>
+                <option value="10-20">10-20 employees</option>
+                <option value="20-50">20-50 employees</option>
+                <option value="50-100">50-100 employees</option>
+                <option value="100-200">100-200 employees</option>
+                <option value="200-500">200-500 employees</option>
+                <option value="500-1000">500-1000 employees</option>
+                <option value="1000-2500">1000-2500 employees</option>
+                <option value="2500+">More than 2500 employees</option>
+              </select>
             </div>
           </div>
 
-          <!-- Input for email and company -->
-          <div class="form-row">
+          <!-- Category Information Section -->
+          <div class="form-section mb-40">
+            <h3>Category Information</h3>
             <div class="input-group">
-              <label for="email">Email</label>
-              <input class="input-field" type="email" id="email" name="email" placeholder="Email" required>
+              <label for="category">Product Category</label>
+              <select class="input-field" id="category" name="category" required>
+                <option value="">Select a category</option>
+                <option value="Fashion">Fashion</option>
+              </select>
             </div>
+
             <div class="input-group">
-              <label for="company">Company</label>
-              <input class="input-field" type="text" id="company" name="company" placeholder="Company" required>
+              <label for="season">Year/Season</label>
+              <select class="input-field" id="season" name="season" required>
+                <option value="">Select a year/season</option>
+                {#each data.years || [] as year}
+                <option value={year}>{formatYearSeason(year)}</option>
+                {/each}
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label for="generation">Generation</label>
+              <select class="input-field" id="generation" name="generation" required>
+                <option value="">Select a generation</option>
+                <option value="gen_z">Generation Z</option>
+                <option value="millennial">Millennial</option>
+                <option value="gen_x">Generation X</option>
+                <option value="baby_boomer">Baby Boomer</option>
+              </select>
             </div>
           </div>
 
-          <!-- Company size dropdown -->
-          <div class="input-group">
-            <label for="company-size">Company Size</label>
-            <select 
-              bind:this={companySizeSelect}
-              class="input-field" 
-              id="company-size" 
-              name="company-size" 
-              required
-            >
-              <option value="">Select company size</option>
-              <option value="freelancer">Freelancer</option>
-              <option value="1-10">Less than 10 employees</option>
-              <option value="10-20">10-20 employees</option>
-              <option value="20-50">20-50 employees</option>
-              <option value="50-100">50-100 employees</option>
-              <option value="100-200">100-200 employees</option>
-              <option value="200-500">200-500 employees</option>
-              <option value="500-1000">500-1000 employees</option>
-              <option value="1000-2500">1000-2500 employees</option>
-              <option value="2500+">More than 2500 employees</option>
-            </select>
-          </div>
-
-          <!-- Product Category dropdown -->
-          <div class="input-group">
-            <label for="category">Product Category</label>
-            <select class="input-field" id="category" name="category" required>
-              <option value="">Select a category</option>
-              <option value="Fashion">Fashion</option>
-            </select>
-          </div>
-
-          <!-- Select dropdown for year/season -->
-          <div class="input-group">
-            <label for="season">Year/Season</label>
-            <select class="input-field" id="season" name="season" required>
-              <option value="">Select a year/season</option>
-              {#each data.years || [] as year}
-              <option value={year}>{formatYearSeason(year)}</option>
-              {/each}
-            </select>
-          </div>
-
-          <!-- Generation dropdown -->
-          <div class="input-group">
-            <label for="generation">Generation</label>
-            <select class="input-field" id="generation" name="generation" required>
-              <option value="">Select a generation</option>
-              <option value="gen_z">Generation Z</option>
-              <option value="millennial">Millennial</option>
-              <option value="gen_x">Generation X</option>
-              <option value="baby_boomer">Baby Boomer</option>
-            </select>
-          </div>
+          <!-- Price Display Section -->
+          {#if selectedCompanySize}
+            <div class="price-section mb-40 text-center">
+              <h3>One-Time Payment</h3>
+              <p class="price-display">€{getCompanySizePrice(selectedCompanySize)}</p>
+            </div>
+          {/if}
 
           <!-- Submit button -->
           <div class="input-group">
@@ -178,6 +230,43 @@
 {/if}
 
 <style>
+  /* Form Section Styles */
+  .form-section {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .form-section:last-child {
+    border-bottom: none;
+  }
+
+  .form-section h3 {
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    text-align: center;
+    color: var(--text-color);
+  }
+
+  /* Price Section Styles */
+  .price-section {
+    text-align: center;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .price-section h3 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    color: var(--text-color);
+  }
+
+  .price-display {
+    font-size: 4rem;
+    font-family: var(--font-primary);
+    color: var(--primary-color);
+    margin: 0;
+  }
+
   /* Style select dropdowns */
   select.input-field {
     cursor: pointer;
@@ -215,9 +304,11 @@
 
   .main-content {
     flex: 1;
-    padding: 2rem;
     max-width: 800px;
     margin: 0 auto;
+    display: flex;
+    align-items: center;
+    min-height: 100vh;
   }
 
   .forecast-section {
@@ -228,7 +319,8 @@
     font-size: 2.5rem;
     text-align: center;
     margin-bottom: 30px;
-    color: #333;
+    color: var(--text-color);
+    font-family: var(--font-heading);
   }
 
   .form-row {
@@ -262,7 +354,8 @@
     }
 
     .main-content {
-      padding: 1rem;
+      min-height: auto;
+      padding: var(--content-padding);
     }
 
     .form-row {
@@ -272,6 +365,10 @@
 
     h2 {
       font-size: 2rem;
+    }
+
+    .price-display {
+      font-size: 3rem;
     }
   }
 </style>
