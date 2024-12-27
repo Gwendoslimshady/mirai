@@ -1,4 +1,6 @@
 <script>
+  import { goto } from '$app/navigation';
+  
   let employeeCount = 1;
   let price = 50; // Starting price for 1 employee
 
@@ -6,20 +8,30 @@
   const updatePrice = (count) => {
     employeeCount = count;
     if (count === 1) {
-      price = 50;
-    } else if (count === 10) {
+      price = 30; // Freelancer
+    } else if (count <= 10) {
+      price = 100;
+    } else if (count <= 20) {
+      price = 250;
+    } else if (count <= 50) {
       price = 400;
-    } else if (count === 30) {
-      price = 900;
-    } else if (count === 60) {
+    } else if (count <= 100) {
+      price = 600;
+    } else if (count <= 200) {
+      price = 1000;
+    } else if (count <= 500) {
       price = 1500;
-    } else if (count > 60) {
-      price = 2500; // Fixed price for "over 60"
+    } else if (count <= 1000) {
+      price = 2000;
+    } else if (count <= 2500) {
+      price = 2500;
+    } else {
+      price = 3000; // More than 2500 employees
     }
   };
 
-  const handlePayment = () => {
-    alert(`Proceeding to pay $${price} USD for ${employeeCount} employees.`);
+  const handleStartForecast = () => {
+    goto(`/forecast?employees=${employeeCount}`);
   };
 
   /** @param {Event} event */
@@ -38,8 +50,8 @@
       <input 
         type="range" 
         min="1" 
-        max="70" 
-        step="1" 
+        max="3000" 
+        step={employeeCount <= 10 ? "1" : "10"} 
         value={employeeCount} 
         on:input={handleInput}
         class="slider" 
@@ -47,17 +59,24 @@
       
       <div class="slider-labels">
         <span class="text-md">1</span>
-        <span class="text-md">10</span>
-        <span class="text-md">30</span>
-        <span class="text-md">60+</span>
+        <span class="text-md">100</span>
+        <span class="text-md">500</span>
+        <span class="text-md">2500+</span>
       </div>
     </div>
 
-    <div class="price-display" on:click={handlePayment}>
-      <h2 class="text-xl mb-20">{employeeCount > 60 ? 'Over 60 Employees' : `${employeeCount} Employees`}</h2>
-      <p class="text-huge">${price}</p>
-      <p class="text-md">USD/month</p>
+    <div class="price-display">
+      <h2 class="text-xl mb-20">
+        {employeeCount === 1 ? 'Freelancer' : 
+         employeeCount > 2500 ? 'Over 2500 Employees' : 
+         `${employeeCount} Employees`}
+      </h2>
+      <p class="text-huge">€{price}</p>
     </div>
+    
+    <button class="glass-button mt-20" on:click={handleStartForecast}>
+      Start Forecast
+    </button>
   </div>
 </section>
 
@@ -129,5 +148,9 @@
     :global(.text-huge) {
       font-size: 3rem;
     }
+  }
+
+  .mt-20 {
+    margin-top: 20px;
   }
 </style>

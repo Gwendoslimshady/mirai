@@ -4,11 +4,40 @@
   import ParticleTrail from '$lib/components/ParticleTrail.svelte';
   import LoginModal from '$lib/components/LoginModal.svelte';
   import { authStore } from '$lib/stores/auth';
+  import { page } from '$app/stores';
   
   // Get the data from page.js
   export let data;
 
   let showLoginModal = false;
+  /** @type {HTMLSelectElement | null} */
+  let companySizeSelect = null;
+
+  // Get employee count from URL parameter
+  $: employeeCount = Number($page.url.searchParams.get('employees')) || 0;
+
+  /**
+   * Determine company size value based on employee count
+   * @param {number} count - Number of employees
+   * @returns {string} Company size value for select
+   */
+  function getCompanySizeValue(count) {
+    if (count === 1) return 'freelancer';
+    if (count <= 10) return '1-10';
+    if (count <= 20) return '10-20';
+    if (count <= 50) return '20-50';
+    if (count <= 100) return '50-100';
+    if (count <= 200) return '100-200';
+    if (count <= 500) return '200-500';
+    if (count <= 1000) return '500-1000';
+    if (count <= 2500) return '1000-2500';
+    return '2500+';
+  }
+
+  // Pre-select company size when employee count is provided
+  $: if (employeeCount && companySizeSelect) {
+    companySizeSelect.value = getCompanySizeValue(employeeCount);
+  }
 
   function handleLoginSuccess() {
     showLoginModal = false;
@@ -67,7 +96,13 @@
           <!-- Company size dropdown -->
           <div class="input-group">
             <label for="company-size">Company Size</label>
-            <select class="input-field" id="company-size" name="company-size" required>
+            <select 
+              bind:this={companySizeSelect}
+              class="input-field" 
+              id="company-size" 
+              name="company-size" 
+              required
+            >
               <option value="">Select company size</option>
               <option value="freelancer">Freelancer</option>
               <option value="1-10">Less than 10 employees</option>
