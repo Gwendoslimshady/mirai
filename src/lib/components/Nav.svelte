@@ -1,13 +1,20 @@
 <script>
   import { fade, slide } from 'svelte/transition';
+  import { authStore } from '$lib/stores/auth';
 
   /** @type {'left' | 'right'} */
   export let position = 'left';
 
   let isMenuOpen = false;
+  let isLoggedIn = false;
 
-  /** @typedef {{ section: string; label: string; href?: never }} SectionLink */
-  /** @typedef {{ href: string; label: string; section?: never }} HrefLink */
+  // Subscribe to auth store changes
+  authStore.subscribe(value => {
+    isLoggedIn = !!value;
+  });
+
+  /** @typedef {{ section: string; label: string; href?: undefined }} SectionLink */
+  /** @typedef {{ href: string; label: string; section?: undefined }} HrefLink */
   /** @typedef {SectionLink | HrefLink} NavLink */
 
   function toggleMenu() {
@@ -34,28 +41,27 @@
     closeMenu();
   }
 
-  /** @type {SectionLink[]} */
+  /** @type {NavLink[]} */
   const leftMenuItems = [
-    { section: 'header', label: 'mirai' },
     { section: 'how-it-works', label: 'how it works' },
     { section: 'about', label: 'about' },
     { section: 'prices', label: 'prices' },
     { section: 'contact', label: 'contact' }
   ];
 
-  /** @type {HrefLink[]} */
-  const rightMenuItems = [
+  /** @type {NavLink[]} */
+  $: rightMenuItems = [
     { href: '/forecast', label: 'start forecast' },
-    { href: '/login', label: 'Login' }
+    { href: '/login', label: isLoggedIn ? 'log out' : 'login' }
   ];
 
-  /** @type {(SectionLink | HrefLink)[]} */
-  const mobileMenuItems = [
+  /** @type {NavLink[]} */
+  $: mobileMenuItems = [
     ...leftMenuItems,
     ...rightMenuItems
   ];
 
-  /** @type {(SectionLink | HrefLink)[]} */
+  /** @type {NavLink[]} */
   $: menuItems = position === 'left' ? leftMenuItems : rightMenuItems;
 </script>
 
