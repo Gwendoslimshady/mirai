@@ -1,8 +1,13 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
     import { pb } from '$lib/services/pocketbase';
+    import { page } from '$app/stores';
+    import { goto } from '$app/navigation';
 
     const dispatch = createEventDispatcher();
+    
+    // Get returnUrl from URL parameters
+    $: returnUrl = $page.url.searchParams.get('returnUrl');
     
     let email = '';
     let password = '';
@@ -21,7 +26,12 @@
             );
             console.log('Login successful:', authData);
             
-            dispatch('success', authData);
+            // If returnUrl exists, navigate to it, otherwise dispatch success event
+            if (returnUrl) {
+                goto(decodeURIComponent(returnUrl));
+            } else {
+                dispatch('success', authData);
+            }
             dispatch('close');
         } catch (err) {
             console.error('Login error:', err);

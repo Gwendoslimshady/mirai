@@ -5,6 +5,7 @@
   import LoginModal from '$lib/components/LoginModal.svelte';
   import { authStore } from '$lib/stores/auth';
   import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
   import { updateForecastForm } from '$lib/stores/forecast';
   
   // Get the data from page.js
@@ -74,25 +75,30 @@
     const form = /** @type {HTMLFormElement} */ (event.target);
     const formData = new FormData(form);
     
-    const year = formData.get('season');
-    const generation = formData.get('generation');
+    const yearValue = /** @type {string} */ (formData.get('season'));
+    const generation = /** @type {string} */ (formData.get('generation'));
     
     // Only proceed if year and generation are selected
-    if (year && generation) {
+    if (yearValue && generation) {
+      // Format year with space (e.g., "ss2025" -> "ss 2025")
+      const season = yearValue.substring(0, 2);
+      const year = yearValue.substring(2);
+      const formattedYear = `${season} ${year}`;
+
       // Save form data to session storage
       updateForecastForm({
         companySize: /** @type {string} */ (formData.get('company-size')),
         category: /** @type {string} */ (formData.get('category')),
-        year: /** @type {string} */ (year),
+        year: /** @type {string} */ (formattedYear),
         generation: /** @type {string} */ (generation)
       });
 
-      // Redirect to forecasted page
+      // Use goto for client-side navigation
       const params = new URLSearchParams({
-        year: /** @type {string} */ (year),
+        year: /** @type {string} */ (yearValue), // Keep original format for URL
         generation: /** @type {string} */ (generation)
       });
-      window.location.href = `/forcasted?${params.toString()}`;
+      goto(`/forcasted?${params.toString()}`);
     }
   }
 

@@ -3,91 +3,22 @@
   import { page } from '$app/stores';
   import { pb } from '$lib/services/pocketbase';
 
-  /** @type {{ year: string, generation: string, availableYears: string[], error: { message: string, status: number } | null }} */
+  /** @type {{ 
+    year: string, 
+    generation: string, 
+    availableYears: string[], 
+    currentData: Array<{id: string, hex: string, colour_name: string, pieces: string[], year: string, priority: number}>,
+    historicalData: Array<{id: string, hex: string, colour_name: string, pieces: string[], year: string, priority: number}>,
+    error: { message: string, status: number } | null 
+  }} */
   export let data;
 
-  /** @type {Array<{id: string, hex: string, colour_name: string, pieces: string[], year: string, priority: number}>} */
-  let fashionColors = [];
   /** @type {string} */
   let selectedYear = data.year || '';
   /** @type {string} */
   let selectedGeneration = data.generation || '';
   /** @type {string} */
   let category = 'Fashion';
-  /** @type {string} */
-  let errorMessage = '';
-
-  /**
-   * Calculate reference year based on generation by subtracting years:
-   * Gen Z: -20 years
-   * Millennials: -22 years
-   * Gen X: -25 years
-   * Boomers: -27 years
-   * @param {string} yearStr - Selected year in format "ssYYYY" or "fwYYYY"
-   * @param {string} generation - Selected generation
-   * @returns {string} Calculated reference year in same format
-   */
-  function calculateReferenceYear(yearStr, generation) {
-    // Extract season (ss/fw) and year, handling format without space
-    const season = yearStr.substring(0, 2);
-    const yearNum = yearStr.substring(2);
-    if (!season || !yearNum || !['ss', 'fw'].includes(season)) return '';
-    const year = parseInt(yearNum, 10);
-    if (isNaN(year)) return '';
-    let yearsToSubtract = 0;
-
-    switch (generation) {
-      case 'gen_z':
-        yearsToSubtract = 20;
-        break;
-      case 'millennial':
-        yearsToSubtract = 22;
-        break;
-      case 'gen_x':
-        yearsToSubtract = 25;
-        break;
-      case 'baby_boomer':
-        yearsToSubtract = 27;
-        break;
-    }
-
-    // Format with space between season and year to match database format
-    const referenceYear = year - yearsToSubtract;
-    return `${season} ${referenceYear}`;
-  }
-
-  /**
-   * Load fashion colors for the selected year and generation
-   */
-  async function loadFashionColors() {
-    if (selectedYear && selectedGeneration) {
-      const referenceYear = calculateReferenceYear(selectedYear, selectedGeneration);
-      console.log('Calculated Reference Year:', referenceYear);
-
-      try {
-        errorMessage = ''; // Clear any previous errors
-        const query = `year = "${referenceYear}"`;
-        console.log('Database Query:', query);
-
-        const records = await pb.collection('fashion_colours').getList(1, 50, {
-          filter: query,
-          sort: 'priority'
-        });
-        
-        console.log('Database Response:', records);
-        fashionColors = /** @type {any} */ (records.items);
-      } catch (/** @type {any} */ error) {
-        console.error('Error fetching fashion colors:', error);
-        errorMessage = error?.message || 'Failed to fetch fashion colors';
-        fashionColors = [];
-      }
-    }
-  }
-
-  // Load data when component mounts
-  $: if (selectedYear && selectedGeneration) {
-    loadFashionColors();
-  }
 
   /**
    * Format the year/season string to be more readable
@@ -120,10 +51,6 @@
             <p>Please <a href="/login">log in</a> to view forecasts.</p>
           {/if}
         </div>
-      {:else if errorMessage}
-        <div class="error-message glass">
-          <p>{errorMessage}</p>
-        </div>
       {:else}
         <div class="selection-info mb-40">
           <div class="info-grid">
@@ -132,25 +59,8 @@
               <p class="text-md">{category}</p>
             </div>
             <div class="info-card glass">
-              <h3>Select Year</h3>
-              <select
-                bind:value={selectedYear}
-                on:change={() => {
-                  const url = new URL(window.location.href);
-                  url.searchParams.set('year', selectedYear);
-                  // Preserve the generation parameter if it exists
-                  if (selectedGeneration) {
-                    url.searchParams.set('generation', selectedGeneration);
-                  }
-                  window.location.href = url.toString();
-                }}
-                class="year-select"
-              >
-                <option value="">Choose a year</option>
-                {#each data.availableYears as year}
-                  <option value={year}>{formatYearSeason(year)}</option>
-                {/each}
-              </select>
+              <h3>Year</h3>
+              <p class="text-md">{formatYearSeason(selectedYear)}</p>
             </div>
             <div class="info-card glass">
               <h3>Generation</h3>
@@ -159,9 +69,28 @@
           </div>
         </div>
 
-        {#if fashionColors.length > 0}
+        {#if data.currentData.length > 0}
+          <h3 class="section-title">Current Season Colors</h3>
           <div class="colors-grid">
-            {#each fashionColors as color}
+            {#each data.currentData as color}
+              <div class="color-card glass">
+                <div class="color-preview" style="background-color: {color.hex}"></div>
+                <h4>{color.colour_name}</h4>
+                <p class="hex-code">{color.hex}</p>
+                {#if color.pieces}
+                  <div class="pieces">
+                    {#each color.pieces as piece}
+                      <span class="piece-tag">{piece}</span>
+                    {/each}
+                  </div>
+                {/if}
+              </div>
+            {/each}
+          </div>
+
+          <h3 class="section-title">Historical Reference Colors</h3>
+          <div class="colors-grid">
+            {#each data.historicalData as color}
               <div class="color-card glass">
                 <div class="color-preview" style="background-color: {color.hex}"></div>
                 <h4>{color.colour_name}</h4>
@@ -293,6 +222,14 @@
     border-radius: 1rem;
     font-size: 0.9rem;
     color: var(--text-color-light);
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+    text-align: center;
+    margin: 2rem 0;
+    color: var(--text-color);
+    font-family: var(--font-heading);
   }
 
   .no-results {

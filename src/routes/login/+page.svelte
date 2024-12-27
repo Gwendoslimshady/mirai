@@ -2,8 +2,12 @@
     import { pb } from '$lib/services/pocketbase';
     import LoginModal from '$lib/components/LoginModal.svelte';
     import { goto } from '$app/navigation';
+    import { page } from '$app/stores';
     import Nav from '$lib/components/Nav.svelte';
     import Footer from '$lib/components/Footer.svelte';
+    
+    // Get returnUrl from URL parameters
+    $: returnUrl = $page.url.searchParams.get('returnUrl') || '/';
     
     let email = '';
     let password = '';
@@ -25,9 +29,9 @@
             );
             console.log('Login successful:', authData);
             success = 'Login successful!';
-            // Redirect after successful login
+            // Redirect to the return URL after successful login
             setTimeout(() => {
-                goto('/');
+                goto(decodeURIComponent(returnUrl));
             }, 1500);
         } catch (err) {
             console.error('Login error:', err);
@@ -39,9 +43,9 @@
 
     function handleModalSuccess() {
         success = 'Login successful!';
-        // Redirect after successful login
+        // Redirect to the return URL after successful login
         setTimeout(() => {
-            goto('/');
+            goto(decodeURIComponent(returnUrl));
         }, 1500);
     }
 </script>
