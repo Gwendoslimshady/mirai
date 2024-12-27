@@ -1,4 +1,5 @@
 import { getColours } from '$lib/services/pocketbase';
+import { generateFashionYears } from '$lib/helpers/yearHelpers';
 
 export async function load() {
   const colours = await getColours();
@@ -6,8 +7,8 @@ export async function load() {
   // Extract unique pieces (categories) from all colours
   const categories = [...new Set(colours.flatMap(colour => colour.pieces))];
   
-  // Extract unique years
-  const years = [...new Set(colours.map(colour => colour.year))];
+  // Get available years from yearHelpers
+  const years = generateFashionYears();
 
   return {
     colours,
