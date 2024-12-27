@@ -17,46 +17,75 @@ export async function load({ url, fetch }) {
     throw redirect(303, '/forecast');
   }
 
-  // Extract the numeric year and season from the format (e.g., "ss2025" -> {year: 2025, season: "ss"})
-  const season = year.substring(0, 2); // "ss" or "fw"
-  const numericYear = parseInt(year.substring(2));
+  // Extract the numeric year and season from the format (e.g., "ss 2025" or "ss2025")
+  let season, numericYear;
   
-  // Subtract 20 years for historical data comparison
-  const historicalYear = numericYear - 20;
+  // Handle both formats: "ss 2025" and "ss2025"
+  if (year.includes(' ')) {
+    [season, numericYear] = year.split(' ');
+    numericYear = parseInt(numericYear);
+  } else {
+    season = year.substring(0, 2); // "ss" or "fw"
+    numericYear = parseInt(year.substring(2));
+  }
   
-  // Format the historical year with the same season (with space)
-  const currentQuery = `${season} ${numericYear}`;
-  const historicalQuery = `${season} ${historicalYear}`;
+  // Calculate historical year based on generation
+  let yearsToSubtract;
+  switch (generation) {
+    case 'gen_z':
+      yearsToSubtract = 20;
+      break;
+    case 'millennial':
+      yearsToSubtract = 22;
+      break;
+    case 'gen_x':
+      yearsToSubtract = 25;
+      break;
+    case 'baby_boomer':
+      yearsToSubtract = 27;
+      break;
+    default:
+      yearsToSubtract = 20; // Default to Gen Z offset
+  }
+  
+  const historicalYear = numericYear - yearsToSubtract;
 
-  console.log('Calculated Reference Year:', season, historicalYear);
-  console.log('Database Query:', `year = "${historicalQuery}"`);
+  // Check if the historical year is within our available data range (1998-2005)
+  if (historicalYear < 1998 || historicalYear > 2005) {
+    console.log('Historical year out of range:', historicalYear);
+    return {
+      year,
+      generation,
+      currentData: [],
+      historicalData: [],
+      error: `No historical data available for ${season.toLowerCase()} ${historicalYear}. Data only available from 1998 to 2005.`
+    };
+  }
+  
+  // Format the years to match the exact format in the database schema
+  const currentQuery = `${season.toLowerCase()} ${numericYear}`;
+  const historicalQuery = `${season.toLowerCase()} ${historicalYear}`;
+
+  console.log('Looking for years:', { current: currentQuery, historical: historicalQuery });
 
   try {
+    // Only query for historical data since that's all we have (1998-2005)
     const response = await pb.collection('fashion_colours').getList(1, 50, {
-      filter: `year = "${currentQuery}" || year = "${historicalQuery}"`,
+      filter: `year = "${historicalQuery}"`,
       sort: 'year'
     });
 
     console.log('Database Response:', response);
 
-    // Get unique years from the database for the select dropdown
-    const yearsResponse = await pb.collection('fashion_colours').getList(1, 1000, {
-      fields: 'year',
-      sort: 'year'
-    });
-    
-    // Extract unique years and format them as "ssYYYY" or "fwYYYY"
-    const availableYears = [...new Set(yearsResponse.items.map(item => {
-      const [season, year] = item.year.split(' ');
-      return `${season}${year}`;
-    }))].sort();
+    // Split the results into current and historical data
+    const currentData = response.items.filter(item => item.year === currentQuery);
+    const historicalData = response.items.filter(item => item.year === historicalQuery);
 
     return {
       year,
       generation,
-      currentData: response.items.filter(item => item.year === currentQuery),
-      historicalData: response.items.filter(item => item.year === historicalQuery),
-      availableYears,
+      currentData,
+      historicalData,
       error: null
     };
   } catch (error) {
@@ -66,7 +95,6 @@ export async function load({ url, fetch }) {
       generation,
       currentData: [],
       historicalData: [],
-      availableYears: [],
       error: 'Failed to fetch forecast data'
     };
   }
