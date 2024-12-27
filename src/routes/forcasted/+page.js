@@ -1,4 +1,4 @@
-import { pb } from '$lib/services/pocketbase';
+import { pb, getColours } from '$lib/services/pocketbase';
 import { redirect } from '@sveltejs/kit';
 
 /** @type {import('./$types').PageLoad} */
@@ -56,46 +56,34 @@ export async function load({ url, fetch }) {
     return {
       year,
       generation,
-      currentData: [],
       historicalData: [],
-      error: `No historical data available for ${season.toLowerCase()} ${historicalYear}. Data only available from 1998 to 2005.`
+      error: `Based on the selected generation (${generation.replace('_', ' ').toUpperCase()}), we're looking at trends from ${season.toLowerCase()} ${historicalYear}. However, our historical data only covers 1998-2005.`
     };
   }
   
-  // Format the years to match the exact format in the database schema
-  const currentQuery = `${season.toLowerCase()} ${numericYear}`;
+  // Format just the historical year to match the schema format
   const historicalQuery = `${season.toLowerCase()} ${historicalYear}`;
 
-  console.log('Looking for years:', { current: currentQuery, historical: historicalQuery });
-
   try {
-    // Only query for historical data since that's all we have (1998-2005)
     const response = await pb.collection('fashion_colours').getList(1, 50, {
       filter: `year = "${historicalQuery}"`,
-      sort: 'year'
+      sort: 'priority'
     });
 
-    console.log('Database Response:', response);
-
-    // Split the results into current and historical data
-    const currentData = response.items.filter(item => item.year === currentQuery);
-    const historicalData = response.items.filter(item => item.year === historicalQuery);
-
     return {
-      year,
+      year, // Keep the original selected year for display
       generation,
-      currentData,
-      historicalData,
+      historicalData: response.items,
       error: null
     };
-  } catch (error) {
-    console.error('Error fetching forecast data:', error);
+  } catch (err) {
+    console.error('Error fetching forecast data:', err);
+    const errorMessage = err instanceof Error ? err.message : 'Failed to fetch forecast data';
     return {
       year,
       generation,
-      currentData: [],
       historicalData: [],
-      error: 'Failed to fetch forecast data'
+      error: errorMessage
     };
   }
 }

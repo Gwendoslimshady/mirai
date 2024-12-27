@@ -6,8 +6,6 @@
   /** @type {{ 
     year: string, 
     generation: string, 
-    availableYears: string[], 
-    currentData: Array<{id: string, hex: string, colour_name: string, pieces: string[], year: string, priority: number}>,
     historicalData: Array<{id: string, hex: string, colour_name: string, pieces: string[], year: string, priority: number}>,
     error: { message: string, status: number } | null 
   }} */
@@ -46,9 +44,10 @@
       
       {#if data.error}
         <div class="error-message glass">
-          <p>Error: {data.error.message}</p>
           {#if data.error.status === 401}
             <p>Please <a href="/login">log in</a> to view forecasts.</p>
+          {:else}
+            <p>{data.error}</p>
           {/if}
         </div>
       {:else}
@@ -69,26 +68,7 @@
           </div>
         </div>
 
-        {#if data.currentData.length > 0}
-          <h3 class="section-title">Current Season Colors</h3>
-          <div class="colors-grid">
-            {#each data.currentData as color}
-              <div class="color-card glass">
-                <div class="color-preview" style="background-color: {color.hex}"></div>
-                <h4>{color.colour_name}</h4>
-                <p class="hex-code">{color.hex}</p>
-                {#if color.pieces}
-                  <div class="pieces">
-                    {#each color.pieces as piece}
-                      <span class="piece-tag">{piece}</span>
-                    {/each}
-                  </div>
-                {/if}
-              </div>
-            {/each}
-          </div>
-
-          <h3 class="section-title">Historical Reference Colors</h3>
+        {#if data.historicalData.length > 0}
           <div class="colors-grid">
             {#each data.historicalData as color}
               <div class="color-card glass">
