@@ -300,11 +300,15 @@ authStore.subscribe(value => {
   }
 
   @media (max-width: 768px) {
-    .nav-toggle {
+    .nav-toggle.left {
       display: block;
       position: fixed;
       top: var(--burger-icon-padding);
       z-index: 1001;
+    }
+
+    .nav-toggle.right {
+      display: none;
     }
 
     .nav-side {
