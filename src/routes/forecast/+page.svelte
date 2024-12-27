@@ -2,9 +2,29 @@
   import Nav from '$lib/components/Nav.svelte';
   import Footer from '$lib/components/Footer.svelte';
   import ParticleTrail from '$lib/components/ParticleTrail.svelte';
+  import LoginModal from '$lib/components/LoginModal.svelte';
+  import { authStore } from '$lib/stores/auth';
   
   // Get the data from page.js
   export let data;
+
+  let showLoginModal = false;
+
+  function handleLoginSuccess() {
+    showLoginModal = false;
+  }
+
+  /**
+   * Format the year/season string to be more readable
+   * @param {string} yearStr - The year and season string in format "ssYYYY" or "fwYYYY"
+   * @returns {string} Formatted string like "2024 Spring Summer" or "2024 Fall Winter"
+   */
+  function formatYearSeason(yearStr) {
+    const prefix = yearStr.substring(0, 2);
+    const year = yearStr.substring(2);
+    const season = prefix === 'ss' ? 'Spring Summer' : 'Fall Winter';
+    return `${year} ${season}`;
+  }
 </script>
 
 <ParticleTrail />
@@ -17,99 +37,96 @@
   <main class="main-content">
     <section class="forecast-section glass-card">
       <h2>Start Your Forecast</h2>
-      <form class="forecast-form">
-        <!-- Input for first and last name -->
-        <div class="form-row">
-          <div class="input-group">
-            <label for="first-name">First Name</label>
-            <input class="input-field" type="text" id="first-name" name="first-name" placeholder="First Name" required>
+      
+      {#if $authStore}
+        <form class="forecast-form">
+          <!-- Input for first and last name -->
+          <div class="form-row">
+            <div class="input-group">
+              <label for="first-name">First Name</label>
+              <input class="input-field" type="text" id="first-name" name="first-name" placeholder="First Name" required>
+            </div>
+            <div class="input-group">
+              <label for="last-name">Last Name</label>
+              <input class="input-field" type="text" id="last-name" name="last-name" placeholder="Last Name" required>
+            </div>
           </div>
-          <div class="input-group">
-            <label for="last-name">Last Name</label>
-            <input class="input-field" type="text" id="last-name" name="last-name" placeholder="Last Name" required>
+
+          <!-- Input for email and company -->
+          <div class="form-row">
+            <div class="input-group">
+              <label for="email">Email</label>
+              <input class="input-field" type="email" id="email" name="email" placeholder="Email" required>
+            </div>
+            <div class="input-group">
+              <label for="company">Company</label>
+              <input class="input-field" type="text" id="company" name="company" placeholder="Company" required>
+            </div>
           </div>
-        </div>
 
-        <!-- Input for email and company -->
-        <div class="form-row">
+          <!-- Company size dropdown -->
           <div class="input-group">
-            <label for="email">Email</label>
-            <input class="input-field" type="email" id="email" name="email" placeholder="Email" required>
+            <label for="company-size">Company Size</label>
+            <select class="input-field" id="company-size" name="company-size" required>
+              <option value="">Select company size</option>
+              <option value="freelancer">Freelancer</option>
+              <option value="1-10">Less than 10 employees</option>
+              <option value="10-20">10-20 employees</option>
+              <option value="20-50">20-50 employees</option>
+              <option value="50-100">50-100 employees</option>
+              <option value="100-200">100-200 employees</option>
+              <option value="200-500">200-500 employees</option>
+              <option value="500-1000">500-1000 employees</option>
+              <option value="1000-2500">1000-2500 employees</option>
+              <option value="2500+">More than 2500 employees</option>
+            </select>
           </div>
+
+          <!-- Product Category dropdown -->
           <div class="input-group">
-            <label for="company">Company</label>
-            <input class="input-field" type="text" id="company" name="company" placeholder="Company" required>
+            <label for="category">Product Category</label>
+            <select class="input-field" id="category" name="category" required>
+              <option value="">Select a category</option>
+              <option value="Fashion">Fashion</option>
+            </select>
           </div>
-        </div>
 
-        <!-- Company size dropdown -->
-        <div class="input-group">
-          <label for="company-size">Company Size</label>
-          <select class="input-field" id="company-size" name="company-size" required>
-            <option value="">Select company size</option>
-            <option value="freelancer">Freelancer</option>
-            <option value="1-10">&lt; 10 employees</option>
-            <option value="10-20">&gt; 10 employees</option>
-            <option value="20-50">&gt; 20 employees</option>
-            <option value="50-100">&gt; 50 employees</option>
-            <option value="100-200">&gt; 100 employees</option>
-            <option value="200-500">&gt; 200 employees</option>
-            <option value="500-1000">&gt; 500 employees</option>
-            <option value="1000-2500">&gt; 1000 employees</option>
-            <option value="2500+">&gt; 2500 employees</option>
-          </select>
-        </div>
+          <!-- Select dropdown for year/season -->
+          <div class="input-group">
+            <label for="season">Year/Season</label>
+            <select class="input-field" id="season" name="season" required>
+              <option value="">Select a year/season</option>
+              {#each data.years || [] as year}
+              <option value={year}>{formatYearSeason(year)}</option>
+              {/each}
+            </select>
+          </div>
 
-        <!-- Product Category dropdown using pieces from fashion_colours -->
-        <div class="input-group">
-          <label for="category">Product Category</label>
-          <select class="input-field" id="category" name="category" required>
-            <option value="">Select a category</option>
-            {#each data.categories || [] as category}
-              <option value={category}>{category}</option>
-            {/each}
-          </select>
-        </div>
+          <!-- Generation dropdown -->
+          <div class="input-group">
+            <label for="generation">Generation</label>
+            <select class="input-field" id="generation" name="generation" required>
+              <option value="">Select a generation</option>
+              <option value="gen_z">Generation Z</option>
+              <option value="millennial">Millennial</option>
+              <option value="gen_x">Generation X</option>
+              <option value="baby_boomer">Baby Boomer</option>
+            </select>
+          </div>
 
-        <!-- Select dropdown for year/season using years from fashion_colours -->
-        <div class="input-group">
-          <label for="season">Year/Season</label>
-          <select class="input-field" id="season" name="season" required>
-            <option value="">Select a year/season</option>
-            {#each data.years || [] as year}
-              <option value={year}>{year}</option>
-            {/each}
-          </select>
+          <!-- Submit button -->
+          <div class="input-group">
+            <button type="submit" class="glass-button">Submit Forecast</button>
+          </div>
+        </form>
+      {:else}
+        <div class="login-prompt">
+          <p class="text-md">Please log in to access the forecast tool</p>
+          <button class="glass-button" on:click={() => showLoginModal = true}>
+            Login
+          </button>
         </div>
-
-        <!-- Generation dropdowns using static values since we don't have a generations collection -->
-        <div class="input-group">
-          <label for="generation">Generation</label>
-          <select class="input-field" id="generation" name="generation" required>
-            <option value="">Select a generation</option>
-            <option value="gen_z">Gen Z</option>
-            <option value="millennial">Millennial</option>
-            <option value="gen_x">Gen X</option>
-            <option value="baby_boomer">Baby Boomer</option>
-          </select>
-        </div>
-
-        <div class="input-group">
-          <label for="target-generation">Target Customer Generation</label>
-          <select class="input-field" id="target-generation" name="target-generation" required>
-            <option value="">Select a target generation</option>
-            <option value="gen_z">Gen Z</option>
-            <option value="millennial">Millennial</option>
-            <option value="gen_x">Gen X</option>
-            <option value="baby_boomer">Baby Boomer</option>
-          </select>
-        </div>
-
-        <!-- Submit button -->
-        <div class="input-group">
-          <button type="submit" class="glass-button">Submit Forecast</button>
-        </div>
-      </form>
+      {/if}
     </section>
   </main>
 
@@ -118,7 +135,37 @@
   </nav>
 </div>
 
+{#if showLoginModal}
+  <LoginModal 
+    on:success={handleLoginSuccess}
+    on:close={() => showLoginModal = false}
+  />
+{/if}
+
 <style>
+  /* Style select dropdowns */
+  select.input-field {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+    padding-right: 2.5rem;
+  }
+
+  select.input-field option {
+    padding: 0.8rem;
+    font-size: 1rem;
+    background: white;
+    color: #333;
+  }
+
+  select.input-field option:first-child {
+    color: #666;
+    font-style: italic;
+  }
+
   .page-layout {
     display: flex;
     width: 100%;
@@ -158,6 +205,11 @@
 
   .form-row .input-group {
     flex: 1;
+  }
+
+  .login-prompt {
+    text-align: center;
+    padding: 2rem;
   }
 
   @media (max-width: 768px) {

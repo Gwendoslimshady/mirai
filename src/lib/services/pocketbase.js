@@ -1,7 +1,7 @@
 import PocketBase from 'pocketbase';
 
 // Use environment variable for the API URL
-const pb = new PocketBase(import.meta.env.VITE_API_URL);
+export const pb = new PocketBase(import.meta.env.VITE_API_URL);
 
 export const getColours = async () => {
   try {

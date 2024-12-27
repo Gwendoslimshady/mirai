@@ -33,21 +33,38 @@ html {
 	--content-max-width: 1200px;
 	--content-padding: 2rem;
 	--nav-bg-color: transparent;
+	
+	/* Colors */
+	--text-color: #333;
+	--text-color-light: #666;
+	--bg-color: #ffffff;
+	--glass-bg: rgba(255, 255, 255, 0.1);
+	--glass-border: rgba(255, 255, 255, 0.3);
+	--glass-shadow: rgba(0, 0, 0, 0.1);
+	--glass-shadow-hover: rgba(0, 0, 0, 0.2);
+	--input-border: rgba(0, 0, 0, 0.1);
+	--input-bg: rgba(255, 255, 255, 0.6);
+	--input-shadow: rgba(0, 0, 0, 0.1);
+	--input-focus-shadow: rgba(0, 123, 255, 0.1);
+	
+	/* Font families */
+	--font-primary: 'Work Sans', sans-serif;
+	--font-heading: 'Teko', sans-serif;
 }
 
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
-	font-family: 'Teko', sans-serif;
-	color: #333;
+	font-family: var(--font-heading);
+	color: var(--text-color);
 	line-height: 1.4;
 	margin-bottom: 20px;
 }
 
 body {
-	font-family: 'Work Sans', sans-serif;
+	font-family: var(--font-primary);
 	line-height: 1.5;
-	background-color: #ffffff;
-	color: #333;
+	background-color: var(--bg-color);
+	color: var(--text-color);
 	overflow-x: hidden;
 	min-height: 100vh;
 }
@@ -58,33 +75,20 @@ body {
 	letter-spacing: var(--nav-link-spacing);
 	text-decoration: none;
 	color: var(--nav-link-color);
-	transition: color 0.3s ease;
+	transition: all 0.3s ease;
 	position: relative;
-	font-family: 'Tako', sans-serif;
+	font-family: var(--font-primary);
 	line-height: 1rem;
 	cursor: pointer;
 	display: inline-block;
 	padding: 3px 0;
+	opacity: 0.8;
 }
 
 .nav-link:hover {
-	color: var(--nav-hover-color);
-}
-
-.nav-link::after {
-	content: '';
-	position: absolute;
-	width: 0;
-	height: 1px;
-	background-color: var(--nav-hover-color);
-	left: 50%;
-	bottom: -1px;
-	transition: width 0.3s ease, left 0.3s ease;
-}
-
-.nav-link:hover::after {
-	width: 100%;
-	left: 0;
+	color: var(--primary-color);
+	opacity: 1;
+	transform: translateY(-1px);
 }
 
 .nav-menu {
@@ -109,17 +113,20 @@ a {
 	font-size: 18px;
 	line-height: 1.6;
 	margin-bottom: 20px;
+	font-family: var(--font-primary);
 }
 
 .text-huge {
 	font-size: 15rem;
 	margin-bottom: 30px;
+	font-family: var(--font-primary);
 }
 
 .text-xl {
 	font-size: 2.5rem;
 	margin-bottom: 20px;
 	line-height: 1.2;
+	font-family: var(--font-primary);
 }
 
 .text-error {
@@ -127,17 +134,20 @@ a {
 	font-weight: bold;
 	color: var(--error-color);
 	margin-bottom: 20px;
+	font-family: var(--font-primary);
 }
 
 .text-md {
 	font-size: 1.2rem;
-	color: #666;
+	color: var(--text-color-light);
 	margin-bottom: 40px;
 	line-height: 1.5;
+	font-family: var(--font-primary);
 }
 
 .text-sm {
 	font-size: 16px;
+	font-family: var(--font-primary);
 }
 
 @media (max-width: 768px) {
@@ -308,28 +318,28 @@ a {
 
 /* Glass Effects */
 .glass {
-	background: rgba(255, 255, 255, 0.1);
+	background: var(--glass-bg);
 	border-radius: 12px;
 	padding: 15px 30px;
 	backdrop-filter: blur(10px);
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-	border: 1px solid rgba(255, 255, 255, 0.3);
+	box-shadow: 0 4px 12px var(--glass-shadow);
+	border: 1px solid var(--glass-border);
 	transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .glass:hover {
 	transform: translateY(-5px);
-	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 6px 20px var(--glass-shadow-hover);
 }
 
 .glass-card {
-	background: rgba(255, 255, 255, 0.1);
+	background: var(--glass-bg);
 	border-radius: 20px;
 	padding: 30px;
 	backdrop-filter: blur(15px);
-	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 4px 15px var(--glass-shadow);
 	transition: transform 0.2s ease, box-shadow 0.2s ease;
-	border: 1px solid rgba(255, 255, 255, 0.2);
+	border: 1px solid var(--glass-border);
 	min-height: 250px;
 	display: flex;
 	flex-direction: column;
@@ -340,7 +350,7 @@ a {
 
 .glass-card:hover {
 	transform: translateY(-5px);
-	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 6px 20px var(--glass-shadow-hover);
 }
 
 /* Form Elements */
@@ -354,8 +364,9 @@ a {
 .input-group label {
 	font-size: 1rem;
 	font-weight: 500;
-	color: #333;
+	color: var(--text-color);
 	margin-bottom: 8px;
+	font-family: var(--font-primary);
 }
 
 .input-field,
@@ -365,11 +376,12 @@ a {
 	width: 100%;
 	padding: 12px;
 	font-size: 1rem;
-	border: 1px solid rgba(0, 0, 0, 0.1);
+	font-family: var(--font-primary);
+	border: 1px solid var(--input-border);
 	border-radius: 8px;
 	outline: none;
-	background-color: rgba(255, 255, 255, 0.6);
-	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+	background-color: var(--input-bg);
+	box-shadow: inset 0 2px 4px var(--input-shadow);
 	transition: all 0.2s ease;
 }
 
@@ -377,8 +389,8 @@ a {
 .input-group input:focus,
 .input-group textarea:focus,
 .input-group select:focus {
-	border-color: #007bff;
-	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 2px rgba(0, 123, 255, 0.1);
+	border-color: var(--primary-color);
+	box-shadow: inset 0 2px 4px var(--input-shadow), 0 0 0 2px var(--input-focus-shadow);
 }
 
 textarea.input-field,
@@ -401,6 +413,7 @@ form.flex-column {
 	padding: 18px 36px;
 	color: var(--button-text);
 	font-size: 1.2rem;
+	font-family: var(--font-primary);
 	cursor: pointer;
 	transition: all 0.2s ease;
 	display: inline-block;
@@ -429,6 +442,7 @@ form.flex-column {
 	box-shadow: 0 4px 12px var(--button-shadow);
 	align-self: flex-start;
 	width: auto;
+	font-family: var(--font-primary);
 }
 
 .button-primary:hover {
@@ -471,7 +485,7 @@ form.flex-column {
 	align-items: center;
 	min-height: 100vh;
 	padding: 20px;
-	background-color: white;
+	background-color: var(--bg-color);
 	text-align: center;
 }
 

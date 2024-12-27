@@ -1,163 +1,202 @@
-<script>
+<script lang="ts">
+    import { pb } from '$lib/services/pocketbase';
+    import LoginModal from '$lib/components/LoginModal.svelte';
+    import { goto } from '$app/navigation';
     import Nav from '$lib/components/Nav.svelte';
     import Footer from '$lib/components/Footer.svelte';
-    let navWidth = '20%'; // adjustable nav width
+    
+    let email = '';
+    let password = '';
+    let error = '';
+    let success = '';
+    let loading = false;
+    let showModal = false;
+
+    async function handleLogin() {
+        loading = true;
+        error = '';
+        success = '';
+        
+        try {
+            console.log('Attempting login with:', { email });
+            const authData = await pb.collection('_pb_users_auth_').authWithPassword(
+                email,
+                password
+            );
+            console.log('Login successful:', authData);
+            success = 'Login successful!';
+            // Redirect after successful login
+            setTimeout(() => {
+                goto('/');
+            }, 1500);
+        } catch (err) {
+            console.error('Login error:', err);
+            error = err instanceof Error ? err.message : 'An unknown error occurred';
+        } finally {
+            loading = false;
+        }
+    }
+
+    function handleModalSuccess() {
+        success = 'Login successful!';
+        // Redirect after successful login
+        setTimeout(() => {
+            goto('/');
+        }, 1500);
+    }
 </script>
 
-<main>
-<Nav width={navWidth} />
-<section class="forecast-section">
-<h2>Start Your Forecast</h2>
-<form class="forecast-form">
-  <!-- Input for first and last name -->
-  <div class="form-row">
-    <div class="form-group">
-      <label for="first-name">First Name</label>
-      <input type="text" id="first-name" name="first-name" placeholder="First Name" required>
+<main class="layout">
+    <Nav position="left" />
+    <div class="content-wrapper">
+        <div class="sections">
+            <section class="section">
+                <div class="glass-card login-container">
+                    <h1 class="text-xl text-center mb-30">Login</h1>
+                    
+                    {#if error}
+                        <div class="message error mb-20">{error}</div>
+                    {/if}
+                    
+                    {#if success}
+                        <div class="message success mb-20">{success}</div>
+                    {/if}
+                    
+                    <form class="flex-column gap-20" on:submit|preventDefault={handleLogin}>
+                        <div class="input-group">
+                            <label for="email">Email</label>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                class="input-field"
+                                bind:value={email} 
+                                required
+                                placeholder="Enter your email"
+                            />
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="password">Password</label>
+                            <input 
+                                type="password" 
+                                id="password" 
+                                class="input-field"
+                                bind:value={password} 
+                                required
+                                placeholder="Enter your password"
+                            />
+                        </div>
+                        
+                        <button type="submit" class="button" disabled={loading}>
+                            {loading ? 'Logging in...' : 'Login'}
+                        </button>
+                    </form>
+
+                    <div class="divider">or</div>
+
+                    <button class="button-primary" on:click={() => showModal = true}>
+                        Login with Modal
+                    </button>
+                </div>
+            </section>
+            <section class="section">
+                <Footer />
+            </section>
+        </div>
     </div>
-    <div class="form-group">
-      <label for="last-name">Last Name</label>
-      <input type="text" id="last-name" name="last-name" placeholder="Last Name" required>
-    </div>
-  </div>
-
-  <!-- Input for email and company -->
-  <div class="form-row">
-    <div class="form-group">
-      <label for="email">Email</label>
-      <input type="email" id="email" name="email" placeholder="Email" required>
-    </div>
-    <div class="form-group">
-      <label for="company">Company</label>
-      <input type="text" id="company" name="company" placeholder="Company" required>
-    </div>
-  </div>
-
-  <!-- Select dropdown for random options (product category) -->
-  <div class="form-group">
-    <label for="category">Product Category</label>
-    <select id="category" name="category" required>
-      <option value="fashion">Fashion</option>
-      <option value="automotive">Automotive</option>
-      <option value="interior">Interior Design</option>
-      <option value="cosmetics">Cosmetics</option>
-      <option value="technology">Technology</option>
-    </select>
-  </div>
-
-  <!-- Select dropdown for year/season -->
-  <div class="form-group">
-    <label for="season">Year/Season</label>
-    <select id="season" name="season" required>
-      <option value="2024-winter">2024 - Winter</option>
-      <option value="2024-spring">2024 - Spring</option>
-      <option value="2024-summer">2024 - Summer</option>
-      <option value="2024-fall">2024 - Fall</option>
-      <option value="2025-winter">2025 - Winter</option>
-      <option value="2025-spring">2025 - Spring</option>
-    </select>
-  </div>
-
-  <!-- Textarea for additional message -->
-  <div class="form-group">
-    <label for="message">Additional Information</label>
-    <textarea id="message" name="message" placeholder="Enter any additional information here..."></textarea>
-  </div>
-
-  <!-- Submit button -->
-  <div class="form-group">
-    <button type="submit">Submit Forecast</button>
-  </div>
-</form>
-</section>
-
+    <Nav position="right" />
 </main>
 
+{#if showModal}
+    <LoginModal 
+        on:close={() => showModal = false}
+        on:success={handleModalSuccess}
+    />
+{/if}
+
 <style>
-main {
-display: flex;
-justify-content: center;
-align-items: center;
-min-height: 100vh;
-padding: 20px;
+.layout {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
 }
 
-.forecast-section {
-width: 100%;
-max-width: 800px;
-background-color: #fff;
-padding: 30px;
-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-border-radius: 8px;
+.content-wrapper {
+    flex: 1;
+    min-width: 0;
+    margin: 0 var(--nav-width);
 }
 
-h2 {
-font-size: 32px;
-text-align: center;
-margin-bottom: 20px;
+.sections {
+    width: 100%;
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.form-row {
-display: flex;
-justify-content: space-between;
-margin-bottom: 20px;
+.section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    padding: 0 var(--content-padding);
 }
 
-.form-group {
-display: flex;
-flex-direction: column;
-margin-bottom: 20px;
-width: 48%; /* Ensures two columns fit side by side */
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
-.form-group label {
-font-size: 14px;
-margin-bottom: 5px;
-font-weight: 500;
+.divider {
+    text-align: center;
+    margin: 0.5rem 0;
+    position: relative;
+    color: #666;
 }
 
-.form-group input,
-.form-group select,
-.form-group textarea {
-padding: 10px;
-border: 1px solid #ccc;
-border-radius: 4px;
-font-size: 16px;
-width: 100%;
-box-sizing: border-box;
+.divider::before,
+.divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 45%;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.1);
 }
 
-.form-group textarea {
-resize: vertical;
-height: 150px;
+.divider::before {
+    left: 0;
 }
 
-button {
-background-color: #000;
-color: #fff;
-padding: 10px 20px;
-border: none;
-border-radius: 4px;
-cursor: pointer;
-font-size: 16px;
-width: 100%;
+.divider::after {
+    right: 0;
 }
 
-button:hover {
-background-color: #333;
+:global(.button),
+:global(.button-primary) {
+    width: 100%;
+    margin: 0;
+}
+
+form {
+    width: 100%;
+}
+
+.input-group {
+    margin: 0;
 }
 
 @media (max-width: 768px) {
-.form-row {
-  flex-direction: column;
-}
-
-.form-group {
-  width: 100%;
-}
-
-button {
-  font-size: 18px;
-}
+    .content-wrapper {
+        margin: 0;
+        padding-top: 60px;
+    }
 }
 </style>
