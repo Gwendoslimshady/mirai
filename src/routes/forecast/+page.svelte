@@ -6,7 +6,6 @@
   import { authStore } from '$lib/stores/auth';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { updateForecastForm } from '$lib/stores/forecast';
   
   // Get the data from page.js
   export let data;
@@ -70,7 +69,11 @@
    * Handle form submission and redirect to forecasted page with params
    * @param {Event} event - Form submission event
    */
-  function handleSubmit(event) {
+  let error = '';
+  let submitting = false;
+  
+  /** @param {SubmitEvent} event */
+  async function handleSubmit(event) {
     event.preventDefault();
     const form = /** @type {HTMLFormElement} */ (event.target);
     const formData = new FormData(form);
@@ -80,25 +83,27 @@
     
     // Only proceed if year and generation are selected
     if (yearValue && generation) {
-      // Format year with space (e.g., "ss2025" -> "ss 2025")
-      const season = yearValue.substring(0, 2);
-      const year = yearValue.substring(2);
-      const formattedYear = `${season} ${year}`;
+      // yearValue is already in correct format "ss 2025" from yearHelpers.js
+      
+      try {
+        error = ''; // Clear any previous errors
+        submitting = true;
 
-      // Save form data to session storage
-      updateForecastForm({
-        companySize: /** @type {string} */ (formData.get('company-size')),
-        category: /** @type {string} */ (formData.get('category')),
-        year: /** @type {string} */ (formattedYear),
-        generation: /** @type {string} */ (generation)
-      });
-
-      // Use goto for client-side navigation
-      const params = new URLSearchParams({
-        year: /** @type {string} */ (yearValue), // Keep original format for URL
-        generation: /** @type {string} */ (generation)
-      });
-      goto(`/forcasted?${params.toString()}`);
+        // Navigate to forecast results with form data
+        const params = new URLSearchParams({
+          year: yearValue,
+          generation: /** @type {string} */ (generation),
+          companySize: /** @type {string} */ (formData.get('company-size')),
+          category: /** @type {string} */ (formData.get('category'))
+        });
+        
+        goto(`/forcasted?${params.toString()}`);
+      } catch (err) {
+        console.error('Error:', err);
+        error = err instanceof Error ? err.message : 'Failed to process forecast. Please try again.';
+      } finally {
+        submitting = false;
+      }
     }
   }
 
@@ -108,10 +113,10 @@
    * @returns {string} Formatted string like "2024 Spring Summer" or "2024 Fall Winter"
    */
   function formatYearSeason(yearStr) {
-    const prefix = yearStr.substring(0, 2);
-    const year = yearStr.substring(2);
-    const season = prefix === 'ss' ? 'Spring Summer' : 'Fall Winter';
-    return `${year} ${season}`;
+    // Handle format "ss 2025" or "fw 2025"
+    const [season, year] = yearStr.split(' ');
+    const seasonText = season === 'ss' ? 'Spring Summer' : 'Fall Winter';
+    return `${year} ${seasonText}`;
   }
 
   /**
@@ -251,9 +256,18 @@
             </div>
           {/if}
 
+          <!-- Error message -->
+          {#if error}
+            <div class="error-message glass">
+              <p>{error}</p>
+            </div>
+          {/if}
+
           <!-- Submit button -->
           <div class="input-group">
-            <button type="submit" class="glass-button">Submit Forecast</button>
+            <button type="submit" class="glass-button" disabled={submitting}>
+              {submitting ? 'Creating Forecast...' : 'Submit Forecast'}
+            </button>
           </div>
         </form>
       {:else}
@@ -315,6 +329,13 @@
     font-family: var(--font-primary);
     color: var(--primary-color);
     margin: 0;
+  }
+
+  .error-message {
+    margin: 1rem 0;
+    padding: 1rem;
+    color: var(--error-color, #ff3e3e);
+    text-align: center;
   }
 
   /* Style select dropdowns */

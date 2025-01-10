@@ -1,11 +1,94 @@
-import { pb, getColours } from '$lib/services/pocketbase';
 import { redirect } from '@sveltejs/kit';
+import { authStore } from '$lib/stores/auth';
+import { get } from 'svelte/store';
+
+/**
+ * Generate a deterministic color based on input parameters
+ * @param {string} seed - String to use as seed for color generation
+ * @param {number} index - Index to create variation
+ * @returns {{ hex: string, hue: number }} Generated color
+ */
+function generateColor(seed, index) {
+  // Create a simple hash of the seed string
+  const hash = seed.split('').reduce((acc, char) => {
+    return ((acc << 5) - acc) + char.charCodeAt(0) | 0;
+  }, 0);
+  
+  // Use the hash to generate a base hue (0-360)
+  const baseHue = Math.abs(hash % 360);
+  
+  // Create variations based on index
+  const hue = (baseHue + (index * 137.5)) % 360;
+  const saturation = 65 + (index * 5) % 20; // 65-85%
+  const lightness = 45 + (index * 7) % 20; // 45-65%
+
+  // Convert HSL to Hex
+  const h = hue / 360;
+  const s = saturation / 100;
+  const l = lightness / 100;
+
+  const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+  const p = 2 * l - q;
+
+  const rgb = [
+    Math.round(hueToRgb(p, q, h + 1/3) * 255),
+    Math.round(hueToRgb(p, q, h) * 255),
+    Math.round(hueToRgb(p, q, h - 1/3) * 255)
+  ];
+
+  const hex = '#' + rgb.map(x => {
+    const hex = x.toString(16);
+    return hex.length === 1 ? '0' + hex : hex;
+  }).join('');
+
+  return { hex, hue };
+}
+
+/**
+ * Helper function for HSL to RGB conversion
+ * @param {number} p - First parameter for RGB conversion
+ * @param {number} q - Second parameter for RGB conversion
+ * @param {number} t - Third parameter for RGB conversion
+ * @returns {number} RGB component value
+ */
+function hueToRgb(p, q, t) {
+  if (t < 0) t += 1;
+  if (t > 1) t -= 1;
+  if (t < 1/6) return p + (q - p) * 6 * t;
+  if (t < 1/2) return q;
+  if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+  return p;
+}
+
+/**
+ * Get color name based on hue value
+ * @param {number} hue - Color hue (0-360)
+ * @returns {string} Color name
+ */
+function getColorName(hue) {
+  /** @type {Array<[number, string]>} */
+  const names = [
+    [15, "Red"],
+    [45, "Orange"],
+    [75, "Yellow"],
+    [165, "Green"],
+    [195, "Cyan"],
+    [255, "Blue"],
+    [285, "Purple"],
+    [315, "Pink"],
+    [360, "Red"]
+  ];
+  
+  for (const [maxHue, name] of names) {
+    if (hue <= maxHue) return name;
+  }
+  return "Red";
+}
 
 /** @type {import('./$types').PageLoad} */
-export async function load({ url, fetch }) {
+export async function load({ url }) {
   // Check authentication first
-  if (!pb.authStore.isValid) {
-    // Save the current URL to redirect back after login
+  if (!get(authStore)) {
     const returnUrl = encodeURIComponent(url.pathname + url.search);
     throw redirect(303, `/login?returnUrl=${returnUrl}`);
   }
@@ -17,73 +100,43 @@ export async function load({ url, fetch }) {
     throw redirect(303, '/forecast');
   }
 
-  // Extract the numeric year and season from the format (e.g., "ss 2025" or "ss2025")
-  let season, numericYear;
+  // Extract the numeric year and season from the format "ss 2025"
+  const [season, yearStr] = year.split(' ');
+  const numericYear = parseInt(yearStr);
   
-  // Handle both formats: "ss 2025" and "ss2025"
-  if (year.includes(' ')) {
-    [season, numericYear] = year.split(' ');
-    numericYear = parseInt(numericYear);
-  } else {
-    season = year.substring(0, 2); // "ss" or "fw"
-    numericYear = parseInt(year.substring(2));
-  }
-  
-  // Calculate historical year based on generation
-  let yearsToSubtract;
-  switch (generation) {
-    case 'gen_z':
-      yearsToSubtract = 20;
-      break;
-    case 'millennial':
-      yearsToSubtract = 22;
-      break;
-    case 'gen_x':
-      yearsToSubtract = 25;
-      break;
-    case 'baby_boomer':
-      yearsToSubtract = 27;
-      break;
-    default:
-      yearsToSubtract = 20; // Default to Gen Z offset
-  }
-  
-  const historicalYear = numericYear - yearsToSubtract;
+  // Base subtraction years for each generation
+  const baseYears = {
+    gen_z: 20,
+    millennial: 22,
+    gen_x: 25,
+    baby_boomer: 27
+  }[generation] || 20;
 
-  // Check if the historical year is within our available data range (1998-2005)
-  if (historicalYear < 1998 || historicalYear > 2005) {
-    console.log('Historical year out of range:', historicalYear);
+  // Calculate historical year for seed
+  const historicalYear = numericYear - baseYears;
+  
+  // Generate a seed string that combines all parameters
+  const seed = `${season}${historicalYear}${generation}`;
+  
+  // Generate 5 colors based on the seed
+  const colors = Array.from({ length: 5 }, (_, i) => {
+    const { hex, hue } = generateColor(seed, i);
+    const colorName = getColorName(hue);
+    
     return {
+      id: `generated-${i}`,
+      hex,
+      colour_name: colorName,
       year,
-      generation,
-      historicalData: [],
-      error: `Based on the selected generation (${generation.replace('_', ' ').toUpperCase()}), we're looking at trends from ${season.toLowerCase()} ${historicalYear}. However, our historical data only covers 1998-2005.`
+      priority: i + 1,
+      pieces: ['dress', 'skirt', 'top'] // Default pieces for all colors
     };
-  }
-  
-  // Format just the historical year to match the schema format
-  const historicalQuery = `${season.toLowerCase()} ${historicalYear}`;
+  });
 
-  try {
-    const response = await pb.collection('fashion_colours').getList(1, 50, {
-      filter: `year = "${historicalQuery}"`,
-      sort: 'priority'
-    });
-
-    return {
-      year, // Keep the original selected year for display
-      generation,
-      historicalData: response.items,
-      error: null
-    };
-  } catch (err) {
-    console.error('Error fetching forecast data:', err);
-    const errorMessage = err instanceof Error ? err.message : 'Failed to fetch forecast data';
-    return {
-      year,
-      generation,
-      historicalData: [],
-      error: errorMessage
-    };
-  }
+  return {
+    year,
+    generation,
+    historicalData: colors,
+    error: null
+  };
 }

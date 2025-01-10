@@ -96,9 +96,9 @@
     "indexes": [],
     "listRule": null,
     "viewRule": null,
-    "createRule": null,
-    "updateRule": null,
-    "deleteRule": null,
+    "createRule": "@request.auth.id != ''",
+    "updateRule": "id = @request.auth.id",
+    "deleteRule": "id = @request.auth.id",
     "options": {}
   },
   {
@@ -236,9 +236,9 @@
     "indexes": [],
     "listRule": "id = @request.auth.id",
     "viewRule": "id = @request.auth.id",
-    "createRule": null,
-    "updateRule": null,
-    "deleteRule": null,
+    "createRule": "@request.auth.id != ''",
+    "updateRule": "id = @request.auth.id",
+    "deleteRule": "id = @request.auth.id",
     "options": {}
   }
 ]

@@ -18,8 +18,8 @@ export function generateFashionYears() {
   for (let i = 0; i < numberOfYears; i++) {
     const year = baseYear + i;
     // Add both spring/summer and fall/winter for each year
-    years.push(`ss${year}`);
-    years.push(`fw${year}`);
+    years.push(`ss ${year}`);
+    years.push(`fw ${year}`);
   }
   
   return years;

@@ -27,3 +27,34 @@ export const getColours = async () => {
     return []; // Return empty array instead of throwing to prevent page crash
   }
 };
+
+/**
+ * Get the range of available years in the database
+ * @returns {Promise<{start: number, end: number}>} The earliest and latest years available
+ */
+export const getAvailableYearRange = async () => {
+  try {
+    const records = await pb.collection('fashion_colours').getFullList({
+      fields: 'year',
+    });
+    
+    if (!records || records.length === 0) {
+      throw new Error('No records found');
+    }
+
+    // Extract years from format "ss YYYY" or "fw YYYY"
+    const years = records.map(record => parseInt(record.year.split(' ')[1]));
+    
+    return {
+      start: Math.min(...years),
+      end: Math.max(...years)
+    };
+  } catch (error) {
+    console.error('Error getting year range:', error);
+    // Return default range if there's an error
+    return {
+      start: 1998,
+      end: 2005
+    };
+  }
+};
