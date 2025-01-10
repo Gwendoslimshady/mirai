@@ -14,7 +14,8 @@ export const getColours = async () => {
   try {
     const records = await pb.collection('fashion_colours').getFullList({
       sort: '-created',
-      fields: 'id,hex,colour_name,year,priority,pieces,colour_combo,mood'
+      fields: 'id,hex,colour_name,year,priority,pieces,colour_combo,mood',
+      expand: 'colour_combo,mood'
     });
     
     if (!records) {

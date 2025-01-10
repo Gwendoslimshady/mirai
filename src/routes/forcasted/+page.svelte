@@ -3,12 +3,35 @@
   import { page } from '$app/stores';
   import { pb } from '$lib/services/pocketbase';
 
-  /** @type {{ 
-    year: string, 
-    generation: string, 
-    historicalData: Array<{id: string, hex: string, colour_name: string, pieces: string[], year: string, priority: number}>,
-    error: { message: string, status: number } | null 
-  }} */
+  /**
+   * @typedef {Object} ColourCombo
+   * @property {string} id
+   * @property {string} hex
+   * @property {string} colour_name
+   * 
+   * @typedef {Object} Mood
+   * @property {string} id
+   * @property {string} name
+   * @property {string} description
+   * 
+   * @typedef {Object} HistoricalColor
+   * @property {string} id
+   * @property {string} hex
+   * @property {string} colour_name
+   * @property {string[]} pieces
+   * @property {string} year
+   * @property {number} priority
+   * @property {ColourCombo|null} colour_combo
+   * @property {Mood|null} mood
+   * 
+   * @typedef {Object} PageData
+   * @property {string} year
+   * @property {string} generation
+   * @property {HistoricalColor[]} historicalData
+   * @property {{message: string, status: number}|null} error
+   */
+
+  /** @type {PageData} */
   export let data;
 
   /** @type {string} */
@@ -75,6 +98,23 @@
                 <div class="color-preview" style="background-color: {color.hex}"></div>
                 <h4>{color.colour_name}</h4>
                 <p class="hex-code">{color.hex}</p>
+                {#if color.colour_combo}
+                  <div class="combo-color">
+                    <h5>Complementary Color</h5>
+                    <div class="color-preview small" style="background-color: {color.colour_combo.hex}"></div>
+                    <p>{color.colour_combo.colour_name}</p>
+                    <p class="hex-code">{color.colour_combo.hex}</p>
+                  </div>
+                {/if}
+                
+                {#if color.mood}
+                  <div class="mood">
+                    <h5>Mood</h5>
+                    <p>{color.mood.name}</p>
+                    <p class="mood-description">{color.mood.description}</p>
+                  </div>
+                {/if}
+
                 {#if color.pieces}
                   <div class="pieces">
                     {#each color.pieces as piece}
@@ -194,6 +234,38 @@
     flex-wrap: wrap;
     gap: 0.5rem;
     justify-content: center;
+  }
+
+  .combo-color {
+    margin: 1rem 0;
+    padding: 1rem 0;
+    border-top: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .combo-color h5,
+  .mood h5 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+  }
+
+  .color-preview.small {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 0.5rem;
+  }
+
+  .mood {
+    margin: 1rem 0;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .mood-description {
+    font-size: 0.9rem;
+    color: var(--text-color-light);
+    margin-top: 0.5rem;
   }
 
   .piece-tag {
