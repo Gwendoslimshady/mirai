@@ -1,7 +1,6 @@
 <script>
   import Nav from '$lib/components/Nav.svelte';
   import Footer from '$lib/components/Footer.svelte';
-  import ParticleTrail from '$lib/components/ParticleTrail.svelte';
   import LoginModal from '$lib/components/LoginModal.svelte';
   import { authStore } from '$lib/stores/auth';
   import { page } from '$app/stores';
@@ -152,8 +151,6 @@
   }
 </script>
 
-<ParticleTrail />
-
 <div class="page-layout">
   <nav class="nav-column nav-left">
     <Nav position="left" />
@@ -250,9 +247,11 @@
 
           <!-- Price Display Section -->
           {#if selectedCompanySize}
-            <div class="price-section mb-40 text-center">
+            <div class="price-section mb-40">
               <h3>One-Time Payment</h3>
-              <p class="price-display">€{getCompanySizePrice(selectedCompanySize)}</p>
+              <div class="price-display">
+                <p class="text-huge">€{getCompanySizePrice(selectedCompanySize)}</p>
+              </div>
             </div>
           {/if}
 
@@ -314,21 +313,34 @@
   /* Price Section Styles */
   .price-section {
     text-align: center;
-    padding: 20px 0;
-    border-bottom: 1px solid var(--glass-border);
+    padding: 3rem;
+    margin: 2rem 0;
   }
 
   .price-section h3 {
     font-size: 1.8rem;
-    margin-bottom: 15px;
+    margin-bottom: 1.5rem;
     color: var(--text-color);
+    font-family: var(--font-heading);
+    letter-spacing: 0.5px;
   }
 
   .price-display {
-    font-size: 4rem;
+    cursor: pointer;
+    padding: 20px;
+    transition: transform 0.2s ease;
+  }
+
+  .price-display:hover {
+    transform: translateY(-5px);
+  }
+
+  .price-display p {
+    font-size: 15rem;
     font-family: var(--font-primary);
-    color: var(--primary-color);
+    color: var(--text-color);
     margin: 0;
+    line-height: 1;
   }
 
   .error-message {
@@ -438,8 +450,12 @@
       font-size: 2rem;
     }
 
-    .price-display {
-      font-size: 3rem;
+    .price-display p {
+      font-size: 4rem;
+    }
+
+    .price-section {
+      padding: 2rem 1rem;
     }
   }
 </style>
