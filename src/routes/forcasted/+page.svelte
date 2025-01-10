@@ -3,12 +3,35 @@
   import { page } from '$app/stores';
   import { pb } from '$lib/services/pocketbase';
 
-  /** @type {{ 
-    year: string, 
-    generation: string, 
-    historicalData: Array<{id: string, hex: string, colour_name: string, pieces: string[], year: string, priority: number}>,
-    error: { message: string, status: number } | null 
-  }} */
+  /**
+   * @typedef {Object} ColourCombo
+   * @property {string} id
+   * @property {string} hex
+   * @property {string} colour_name
+   * 
+   * @typedef {Object} Mood
+   * @property {string} id
+   * @property {string} name
+   * @property {string} description
+   * 
+   * @typedef {Object} HistoricalColor
+   * @property {string} id
+   * @property {string} hex
+   * @property {string} colour_name
+   * @property {string[]} pieces
+   * @property {string} year
+   * @property {number} priority
+   * @property {ColourCombo|null} colour_combo
+   * @property {Mood|null} mood
+   * 
+   * @typedef {Object} PageData
+   * @property {string} year
+   * @property {string} generation
+   * @property {HistoricalColor[]} historicalData
+   * @property {{message: string, status: number}|null} error
+   */
+
+  /** @type {PageData} */
   export let data;
 
   /** @type {string} */
@@ -38,8 +61,8 @@
     <Nav position="left" />
   </nav>
 
-  <main class="main-content p-60">
-    <section class="forecast-results glass p-30">
+  <main class="main-content">
+    <section class="forecast-results">
       <h2>Fashion Color Forecast</h2>
       
       {#if data.error}
@@ -75,6 +98,23 @@
                 <div class="color-preview" style="background-color: {color.hex}"></div>
                 <h4>{color.colour_name}</h4>
                 <p class="hex-code">{color.hex}</p>
+                {#if color.colour_combo}
+                  <div class="combo-color">
+                    <h5>Complementary Color</h5>
+                    <div class="color-preview small" style="background-color: {color.colour_combo.hex}"></div>
+                    <p>{color.colour_combo.colour_name}</p>
+                    <p class="hex-code">{color.colour_combo.hex}</p>
+                  </div>
+                {/if}
+                
+                {#if color.mood}
+                  <div class="mood">
+                    <h5>Mood</h5>
+                    <p>{color.mood.name}</p>
+                    <p class="mood-description">{color.mood.description}</p>
+                  </div>
+                {/if}
+
                 {#if color.pieces}
                   <div class="pieces">
                     {#each color.pieces as piece}
@@ -116,14 +156,20 @@
     flex: 1;
     max-width: 1200px;
     margin: 0 auto;
+    padding: 4rem 2rem;
+  }
+
+  .forecast-results {
+    width: 100%;
   }
 
   h2 {
-    font-size: 2.5rem;
+    font-size: 3rem;
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 3rem;
     color: var(--text-color);
     font-family: var(--font-heading);
+    letter-spacing: 1px;
   }
 
   .error-message {
@@ -131,6 +177,7 @@
     padding: 2rem;
     margin: 2rem 0;
     color: var(--error-color, #ff3e3e);
+    backdrop-filter: blur(10px);
   }
 
   .error-message a {
@@ -140,6 +187,7 @@
 
   .selection-info {
     width: 100%;
+    margin-bottom: 4rem;
   }
 
   .info-grid {
@@ -150,58 +198,131 @@
 
   .info-card {
     text-align: center;
+    padding: 2.5rem 2rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px var(--glass-shadow-hover);
   }
 
   .info-card h3 {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    font-family: var(--font-heading);
+    letter-spacing: 0.5px;
   }
 
   .colors-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 2rem;
-    padding: 1rem;
   }
 
   .color-card {
-    padding: 1.5rem;
+    padding: 3rem 2rem;
     text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .color-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px var(--glass-shadow-hover);
   }
 
   .color-preview {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
-    margin: 0 auto 1rem;
-    border: 2px solid var(--glass-border);
+    margin: 0 auto;
+    border: 3px solid var(--glass-border);
+    box-shadow: 0 4px 12px var(--glass-shadow);
+    transition: transform 0.3s ease;
+  }
+
+  .color-card:hover .color-preview {
+    transform: scale(1.05);
   }
 
   .color-card h4 {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
+    font-size: 1.4rem;
     color: var(--text-color);
+    font-family: var(--font-heading);
+    letter-spacing: 0.5px;
   }
 
   .hex-code {
-    font-family: monospace;
+    font-family: var(--font-primary);
     color: var(--text-color-light);
-    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    background: var(--glass-bg);
+    padding: 0.4rem 1rem;
+    border-radius: 4px;
+    display: inline-block;
   }
 
   .pieces {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.7rem;
     justify-content: center;
   }
 
-  .piece-tag {
-    background: var(--glass-background);
-    padding: 0.3rem 0.8rem;
-    border-radius: 1rem;
-    font-size: 0.9rem;
+  .combo-color {
+    margin: 0;
+    padding: 2rem 0;
+    border-top: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .combo-color h5,
+  .mood h5 {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+    font-family: var(--font-heading);
+    letter-spacing: 0.5px;
+  }
+
+  .color-preview.small {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 1rem;
+    border-width: 2px;
+  }
+
+  .mood {
+    margin: 0;
+    padding: 2rem 0;
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .mood-description {
+    font-size: 0.95rem;
     color: var(--text-color-light);
+    margin-top: 1rem;
+    line-height: 1.6;
+    padding: 0 1rem;
+  }
+
+  .piece-tag {
+    background: var(--glass-bg);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    border: 1px solid var(--glass-border);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .piece-tag:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--glass-shadow);
   }
 
   .section-title {
@@ -215,23 +336,13 @@
   .no-results {
     text-align: center;
     padding: 3rem;
+    backdrop-filter: blur(10px);
   }
 
-  .year-select {
-    width: 100%;
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    background: var(--glass-background);
-    border: 1px solid var(--glass-border);
-    color: var(--text-color);
-    font-size: 1rem;
-    cursor: pointer;
-    outline: none;
-  }
-
-  .year-select option {
-    background: var(--background-color);
-    color: var(--text-color);
+  @media (max-width: 1024px) {
+    .colors-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
   }
 
   @media (max-width: 768px) {
@@ -248,16 +359,50 @@
     }
 
     .main-content {
-      padding: var(--content-padding);
+      padding: 3rem 1.5rem;
     }
 
     .info-grid {
       grid-template-columns: 1fr;
-      gap: 1rem;
+      gap: 1.5rem;
     }
 
     .colors-grid {
       grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    h2 {
+      font-size: 2.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .color-card {
+      padding: 2.5rem 1.5rem;
+    }
+
+    .info-card {
+      padding: 2rem 1.5rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .main-content {
+      padding: 2rem 1rem;
+    }
+
+    .color-preview {
+      width: 100px;
+      height: 100px;
+    }
+
+    .color-card h4 {
+      font-size: 1.2rem;
+    }
+
+    .piece-tag {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
     }
   }
 </style>

@@ -2,9 +2,12 @@
     import { fade } from 'svelte/transition';
     import { page } from '$app/stores';
     import { getMetadata } from '$lib/config/metadata';
+    import ParticleTrail from '$lib/components/ParticleTrail.svelte';
     
     $: metadata = getMetadata($page.url.pathname);
 </script>
+
+<ParticleTrail />
   
 <svelte:head>
     <title>{metadata.title}</title>

@@ -6,13 +6,11 @@
   import Contact from '$lib/components/Contact.svelte';
   import Footer from '$lib/components/Footer.svelte';
   import Nav from '$lib/components/Nav.svelte';
-  import ParticleTrail from '$lib/components/ParticleTrail.svelte';
   import { generateRandomGradient } from '$lib/helpers/mouseHelpers.js';
 
   let gradient = generateRandomGradient();
 </script>
 
-<ParticleTrail />
 <main class="layout">
   <Nav position="left" />
   <div class="content-wrapper">

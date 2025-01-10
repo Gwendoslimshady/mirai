@@ -1,11 +1,12 @@
-import { pb, getColours } from '$lib/services/pocketbase';
 import { redirect } from '@sveltejs/kit';
+import { authStore } from '$lib/stores/auth';
+import { get } from 'svelte/store';
+import { pb } from '$lib/services/pocketbase';
 
 /** @type {import('./$types').PageLoad} */
-export async function load({ url, fetch }) {
+export async function load({ url }) {
   // Check authentication first
-  if (!pb.authStore.isValid) {
-    // Save the current URL to redirect back after login
+  if (!get(authStore)) {
     const returnUrl = encodeURIComponent(url.pathname + url.search);
     throw redirect(303, `/login?returnUrl=${returnUrl}`);
   }
@@ -17,68 +18,63 @@ export async function load({ url, fetch }) {
     throw redirect(303, '/forecast');
   }
 
-  // Extract the numeric year and season from the format (e.g., "ss 2025" or "ss2025")
-  let season, numericYear;
-  
-  // Handle both formats: "ss 2025" and "ss2025"
-  if (year.includes(' ')) {
-    [season, numericYear] = year.split(' ');
-    numericYear = parseInt(numericYear);
-  } else {
-    season = year.substring(0, 2); // "ss" or "fw"
-    numericYear = parseInt(year.substring(2));
-  }
-  
-  // Calculate historical year based on generation
-  let yearsToSubtract;
-  switch (generation) {
-    case 'gen_z':
-      yearsToSubtract = 20;
-      break;
-    case 'millennial':
-      yearsToSubtract = 22;
-      break;
-    case 'gen_x':
-      yearsToSubtract = 25;
-      break;
-    case 'baby_boomer':
-      yearsToSubtract = 27;
-      break;
-    default:
-      yearsToSubtract = 20; // Default to Gen Z offset
-  }
-  
-  const historicalYear = numericYear - yearsToSubtract;
+  try {
+    console.log('Input year:', year);
+    console.log('Input generation:', generation);
 
-  // Check if the historical year is within our available data range (1998-2005)
-  if (historicalYear < 1998 || historicalYear > 2005) {
-    console.log('Historical year out of range:', historicalYear);
+    // Extract the numeric year and season from the format "ss 2025"
+    const [season, yearStr] = year.split(' ');
+    const numericYear = parseInt(yearStr);
+    
+    // Base subtraction years for each generation
+    const baseYears = {
+      gen_z: 20,
+      millennial: 22,
+      gen_x: 25,
+      baby_boomer: 27
+    }[generation.toLowerCase()] || 20;
+
+    // Calculate historical year for seed
+    const historicalYear = numericYear - baseYears;
+    
+    // Create the historical year string in the same format (e.g., "ss 2003")
+    const historicalYearStr = `${season.toLowerCase()} ${historicalYear}`;
+
+    console.log('Base years for generation:', baseYears);
+    console.log('Calculated historical year:', historicalYearStr);
+
+    // Fetch colors for this historical year
+    const colors = await pb.collection('fashion_colours').getFullList({
+      filter: `year = "${historicalYearStr}"`,
+      sort: 'priority',
+      expand: 'colour_combo,mood'
+    });
+
+    console.log('Historical year:', historicalYearStr);
+    console.log('Found colors:', colors);
+
+    if (!colors || colors.length === 0) {
+      throw new Error(`No colors found for year ${historicalYearStr}`);
+    }
+
     return {
       year,
       generation,
-      historicalData: [],
-      error: `Based on the selected generation (${generation.replace('_', ' ').toUpperCase()}), we're looking at trends from ${season.toLowerCase()} ${historicalYear}. However, our historical data only covers 1998-2005.`
-    };
-  }
-  
-  // Format just the historical year to match the schema format
-  const historicalQuery = `${season.toLowerCase()} ${historicalYear}`;
-
-  try {
-    const response = await pb.collection('fashion_colours').getList(1, 50, {
-      filter: `year = "${historicalQuery}"`,
-      sort: 'priority'
-    });
-
-    return {
-      year, // Keep the original selected year for display
-      generation,
-      historicalData: response.items,
+      historicalData: colors.map(color => ({
+        id: color.id,
+        hex: color.hex,
+        colour_name: color.colour_name,
+        year,
+        priority: color.priority,
+        pieces: color.pieces,
+        colour_combo: Array.isArray(color.expand?.colour_combo) ? color.expand.colour_combo[0] || null : null,
+        mood: color.expand?.mood || null
+      })),
       error: null
     };
-  } catch (err) {
-    console.error('Error fetching forecast data:', err);
-    const errorMessage = err instanceof Error ? err.message : 'Failed to fetch forecast data';
+  } catch (error) {
+    console.error('Error generating forecast:', error);
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
     return {
       year,
       generation,

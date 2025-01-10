@@ -24,10 +24,20 @@
      * @returns {HSLColor}
      */
     function getRandomHSLColor() {
-        const h = Math.floor(Math.random() * 360); // Random hue
-        const s = 70 + Math.random() * 30; // Random saturation between 70% and 100%
-        const l = 50 + Math.random() * 20; // Random lightness between 50% and 70%
-        return { h, s, l };
+        try {
+            const h = Math.floor(Math.random() * 360); // Random hue
+            const s = 70 + Math.random() * 30; // Random saturation between 70% and 100%
+            const l = 50 + Math.random() * 20; // Random lightness between 50% and 70%
+            // Validate values before returning
+            return {
+                h: isNaN(h) ? 0 : h,
+                s: isNaN(s) ? 70 : Math.max(0, Math.min(100, s)),
+                l: isNaN(l) ? 50 : Math.max(0, Math.min(100, l))
+            };
+        } catch (error) {
+            console.error('Error generating random color:', error);
+            return { h: 0, s: 70, l: 50 }; // Fallback to a default color
+        }
     }
 
     /**
@@ -41,20 +51,44 @@
         if (!ctx || !canvas) return null;
         
         try {
+            // Validate input colors
+            if (!color1 || !color2 || 
+                typeof color1.h !== 'number' || typeof color1.s !== 'number' || typeof color1.l !== 'number' ||
+                typeof color2.h !== 'number' || typeof color2.s !== 'number' || typeof color2.l !== 'number') {
+                throw new Error('Invalid color values');
+            }
+
             const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0); // Horizontal gradient
 
-            // Adjust the hue based on scroll ratio (0 to 1)
-            const hueShift1 = (color1.h + scrollRatio * 360) % 360;
-            const hueShift2 = (color2.h + scrollRatio * 360) % 360;
+            // Ensure scroll ratio is valid
+            const validScrollRatio = isNaN(scrollRatio) ? 0 : Math.min(1, Math.max(0, scrollRatio));
 
-            // Convert to HSL string format
-            const shiftedColor1 = `hsl(${hueShift1}, ${color1.s}%, ${color1.l}%)`;
-            const shiftedColor2 = `hsl(${hueShift2}, ${color2.s}%, ${color2.l}%)`;
+            // Calculate hue shifts with bounds checking
+            const hueShift1 = Math.floor((color1.h + validScrollRatio * 360) % 360);
+            const hueShift2 = Math.floor((color2.h + validScrollRatio * 360) % 360);
 
-            gradient.addColorStop(0, shiftedColor1); // Adjusted color1 based on hue shift
-            gradient.addColorStop(1, shiftedColor2); // Adjusted color2 based on hue shift
+            // Clamp saturation and lightness values
+            const s1 = Math.min(100, Math.max(0, color1.s));
+            const l1 = Math.min(100, Math.max(0, color1.l));
+            const s2 = Math.min(100, Math.max(0, color2.s));
+            const l2 = Math.min(100, Math.max(0, color2.l));
 
-            return gradient;
+            // Create color strings with validated values
+            const shiftedColor1 = `hsl(${hueShift1}, ${s1}%, ${l1}%)`;
+            const shiftedColor2 = `hsl(${hueShift2}, ${s2}%, ${l2}%)`;
+
+            try {
+                gradient.addColorStop(0, shiftedColor1);
+                gradient.addColorStop(1, shiftedColor2);
+                return gradient;
+            } catch (colorError) {
+                console.error('Error adding color stops:', colorError);
+                // Create a fallback gradient if color stops fail
+                const fallbackGradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+                fallbackGradient.addColorStop(0, 'hsl(0, 70%, 50%)');
+                fallbackGradient.addColorStop(1, 'hsl(180, 70%, 50%)');
+                return fallbackGradient;
+            }
         } catch (error) {
             console.error('Error creating gradient:', error);
             return null;
@@ -120,9 +154,25 @@
             gradientCtx.fillStyle = globalGradient;
             gradientCtx.fillRect(0, 0, gradientCanvas.width, 1);
 
-            // Sample the color based on the particle's x position
-            const imageData = gradientCtx.getImageData(this.x, 0, 1, 1).data;
-            this.color = `rgba(${imageData[0]}, ${imageData[1]}, ${imageData[2]}, 1)`;
+            try {
+                // Sample the color based on the particle's x position
+                const imageData = gradientCtx.getImageData(
+                    Math.min(Math.max(0, this.x), gradientCanvas.width - 1), // Clamp x position
+                    0,
+                    1,
+                    1
+                ).data;
+                
+                // Ensure RGB values are valid numbers
+                const r = isNaN(imageData[0]) ? 0 : Math.min(255, Math.max(0, imageData[0]));
+                const g = isNaN(imageData[1]) ? 0 : Math.min(255, Math.max(0, imageData[1]));
+                const b = isNaN(imageData[2]) ? 0 : Math.min(255, Math.max(0, imageData[2]));
+                
+                this.color = `rgba(${r}, ${g}, ${b}, 1)`;
+            } catch (error) {
+                console.error('Error sampling gradient color:', error);
+                this.color = 'rgba(0, 0, 0, 1)'; // Fallback color
+            }
 
             // Store ellipse size and rotation (fixed for consistency)
             this.radiusX = this.size * (Math.random() * 0.7 + 0.6);
@@ -142,16 +192,37 @@
         draw(ctx) {
             try {
                 if (this.alpha > 0.05) {
-                    const gradient = ctx.createRadialGradient(this.x, this.y, this.size * 0.1, this.x, this.y, this.size);
-                    const colorMatch = this.color.match(/\d+/g);
-                    if (!colorMatch) return;
-                    
-                    const rgbValues = colorMatch.slice(0, 3).join(',');
-                    gradient.addColorStop(0, `rgba(${rgbValues}, ${this.alpha})`);
-                    gradient.addColorStop(1, `rgba(${rgbValues}, 0)`);
+                    let particleGradient;
+                    try {
+                        particleGradient = ctx.createRadialGradient(
+                            this.x, this.y, Math.max(0, this.size * 0.1),
+                            this.x, this.y, Math.max(0.1, this.size)
+                        );
+                        
+                        const colorMatch = this.color.match(/\d+/g);
+                        if (!colorMatch) {
+                            throw new Error('Invalid color format');
+                        }
+                        
+                        // Ensure RGB values are valid
+                        const rgbValues = colorMatch.slice(0, 3)
+                            .map(val => isNaN(Number(val)) ? 0 : Math.min(255, Math.max(0, Number(val))))
+                            .join(',');
+                        
+                        // Ensure alpha is valid
+                        const alpha = isNaN(this.alpha) ? 0 : Math.min(1, Math.max(0, this.alpha));
+                        
+                        particleGradient.addColorStop(0, `rgba(${rgbValues}, ${alpha})`);
+                        particleGradient.addColorStop(1, `rgba(${rgbValues}, 0)`);
+                    } catch (error) {
+                        console.error('Error creating particle gradient:', error);
+                        particleGradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, 1); // Minimal fallback gradient
+                        particleGradient.addColorStop(0, 'rgba(0, 0, 0, 1)');
+                        particleGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                    }
 
                     ctx.globalAlpha = 1;
-                    ctx.fillStyle = gradient;
+                    ctx.fillStyle = particleGradient;
 
                     ctx.beginPath();
                     ctx.ellipse(this.x, this.y, this.radiusX, this.radiusY, this.rotation, 0, Math.PI * 2);
@@ -220,15 +291,35 @@
             ctx = context;
             if (!ctx) return;
 
-            // Generate random colors when the page loads
-            baseColor1 = getRandomHSLColor();
-            baseColor2 = getRandomHSLColor();
+            // Initialize with default colors in case random generation fails
+            baseColor1 = { h: 0, s: 70, l: 50 };
+            baseColor2 = { h: 180, s: 70, l: 50 };
+
+            try {
+                // Generate random colors when the page loads
+                const color1 = getRandomHSLColor();
+                const color2 = getRandomHSLColor();
+                
+                // Only update if we got valid colors
+                if (color1 && !isNaN(color1.h) && !isNaN(color1.s) && !isNaN(color1.l)) {
+                    baseColor1 = color1;
+                }
+                if (color2 && !isNaN(color2.h) && !isNaN(color2.s) && !isNaN(color2.l)) {
+                    baseColor2 = color2;
+                }
+            } catch (error) {
+                console.error('Error generating initial colors:', error);
+                // Keep using default colors if random generation failed
+            }
 
             let scrollRatio = 0;
 
-            // Create initial gradient based on random colors
+            // Create initial gradient based on colors
             let globalGradient = createGlobalGradient(scrollRatio, baseColor1, baseColor2);
-            if (!globalGradient) return;
+            if (!globalGradient) {
+                console.error('Failed to create initial gradient');
+                return;
+            }
 
             animate(globalGradient);
 
@@ -240,13 +331,22 @@
 
             // Listen for scroll events and update the hue based on scroll position
             window.addEventListener('scroll', () => {
-                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                const documentHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-                scrollRatio = scrollTop / documentHeight; // Calculate the scroll ratio (0 to 1)
+                try {
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const documentHeight = Math.max(1, document.documentElement.scrollHeight - document.documentElement.clientHeight);
+                    scrollRatio = Math.min(1, Math.max(0, scrollTop / documentHeight)); // Ensure ratio is between 0 and 1
 
-                // Update the gradient with the hue shift based on scroll position
-                if (baseColor1 && baseColor2) {
-                    globalGradient = createGlobalGradient(scrollRatio, baseColor1, baseColor2);
+                    // Update the gradient with the hue shift based on scroll position
+                    if (baseColor1 && baseColor2 && 
+                        !isNaN(baseColor1.h) && !isNaN(baseColor1.s) && !isNaN(baseColor1.l) &&
+                        !isNaN(baseColor2.h) && !isNaN(baseColor2.s) && !isNaN(baseColor2.l)) {
+                        const newGradient = createGlobalGradient(scrollRatio, baseColor1, baseColor2);
+                        if (newGradient) {
+                            globalGradient = newGradient;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error updating gradient on scroll:', error);
                 }
             });
 
