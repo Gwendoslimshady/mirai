@@ -3,9 +3,6 @@
     import { page } from '$app/stores';
     import { getMetadata } from '$lib/config/metadata';
     
-    /** @type {string | undefined} */
-    export let segment;
-    
     $: metadata = getMetadata($page.url.pathname);
 </script>
   
